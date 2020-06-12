@@ -1,0 +1,4 @@
+spring:
+  profiles:
+    active: dev
+##或spring.profiles.active=dev

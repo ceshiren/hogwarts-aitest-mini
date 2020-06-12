@@ -16,19 +16,11 @@ import java.util.Objects;
 @Component
 public class TokenDb {
 
-    //key是用户id，用户名和密码的md5值，
+    //key就是token字符串
     private Map<String, TokenDto> tokenMap = new HashMap<>();
-
-    //用户数据，暂存
-    private Map<Integer, User> userMap = new HashMap<>();
-
 
     public int getTokenMapSize() {
         return tokenMap.size();
-    }
-
-    public int getUserMapSize() {
-        return userMap.size();
     }
 
     public TokenDto getTokenDto(String token){
@@ -48,22 +40,6 @@ public class TokenDb {
     public boolean isLogin(String token){
         return tokenMap.get(token)!=null;
     }
-
-
-
-
-    public User getUser(Integer id){
-        return userMap.get(id);
-    }
-
-    public User addUser(User user){
-        Integer id = user.getId();
-        if(Objects.isNull(id)){
-            throw new RuntimeException("用户id不能为空");
-        }
-        return userMap.put(id,user);
-    }
-
 
 
 }

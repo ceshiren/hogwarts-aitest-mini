@@ -2,13 +2,12 @@ package com.hogwartstest.aitestmini.controller;
 
 import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
-import com.hogwartstest.aitestmini.constants.UserConstants;
 import com.hogwartstest.aitestmini.dto.AddUserDto;
 import com.hogwartstest.aitestmini.dto.LoginUserDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.TokenDto;
-import com.hogwartstest.aitestmini.entity.User;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
+import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
+import com.hogwartstest.aitestmini.util.CopyUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -26,7 +24,10 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class HogwartsTestUserController {
+
+    @Autowired
+    private HogwartsTestUserService hogwartsTestUserService;
 
     @Autowired
     private TokenDb tokenDb;
@@ -38,7 +39,7 @@ public class UserController {
      */
     @ApiOperation(value = "用户注册", notes="仅用于测试用户")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResultDto createUser(@RequestBody AddUserDto addUserDto){
+    public ResultDto<HogwartsTestUser> save(@RequestBody AddUserDto addUserDto){
 
         log.info("用户注册-入参= "+ addUserDto);
 
@@ -58,46 +59,29 @@ public class UserController {
             return ResultDto.success("密码不能为空");
         }
 
-        String newPwd = DigestUtils.md5DigestAsHex((UserConstants.md5Hex_sign + userName+pwd).getBytes());
-
-        User user = new User();
-        user.setId(tokenDb.getUserMapSize());
-        user.setUserName(addUserDto.getUserName());
-        user.setPassword(newPwd);
-
-        tokenDb.addUser(user);
-
-        return ResultDto.success("注册成功");
+        HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
+        CopyUtil.copyPropertiesCglib(addUserDto,hogwartsTestUser);
+        ResultDto<HogwartsTestUser> resultDto = hogwartsTestUserService.save(hogwartsTestUser);
+        return resultDto;
     }
 
     @ApiOperation(value = "登录接口")
     @PostMapping("/login")
-    public ResultDto<Token> restfulLogin(@RequestBody LoginUserDto loginUserDto) {
-        String username = loginUserDto.getUsername();
+    public ResultDto<Token> login(@RequestBody LoginUserDto loginUserDto) {
+        String userName = loginUserDto.getUserName();
         String password = loginUserDto.getPassword();
-        log.info("username= "+username);
-        if(StringUtils.isEmpty(username)||StringUtils.isEmpty(password)){
+        log.info("userName= "+userName);
+        if(StringUtils.isEmpty(userName)||StringUtils.isEmpty(password)){
             return ResultDto.fail("用户名或密码不能为空");
         }
 
-        Token token = new Token();
+        ResultDto<Token> resultDto = hogwartsTestUserService.login(userName, password);
 
-        String tokenStr = DigestUtils.md5DigestAsHex((System.currentTimeMillis() + username+password).getBytes());
-
-        token.setToken(tokenStr);
-
-        TokenDto tokenDto = new TokenDto();
-        tokenDto.setUserId(12);
-        tokenDto.setUserName(username);
-
-
-        tokenDb.addTokenDto(tokenStr, tokenDto);
-
-        return ResultDto.success("登录成功",token);
+        return resultDto;
     }
 
     @ApiOperation(value = "Restful方式登陆,前后端分离时登录接口")
-    @GetMapping("/login/{token}")
+    @GetMapping("/{token}")
     public ResultDto isLogin(@PathVariable String token) {
 
         boolean loginFlag = tokenDb.isLogin(token);

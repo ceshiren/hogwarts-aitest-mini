@@ -1,4 +1,4 @@
-package com.hogwartstest.aitestmini.common.extension;
+package com.hogwartstest.aitestmini.common;
 
 /**
  * mybatis的的mapper的统一父类，用于简单sql语句的快速编码

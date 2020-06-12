@@ -1,0 +1,134 @@
+
+server:
+  port: 8096
+  connection-timeout: 18000000
+  servlet:
+    session:
+      timeout: 30m #30分钟，测试的话时间不能太短，否则不准。m是分钟单位，s是秒的单位，h是小时的单位，不写单位的话默认是毫秒
+
+# 是否启用httpclient
+feign:
+  httpclient:
+    enabled: false
+  # 是否启用httpok（性能比httpclient高）
+  okhttp:
+    enabled: true
+  # 是否启用hystrix
+  hystrix:
+    enabled: true
+# 请求连接超时时间（毫秒）
+httpclient:
+  connection-timeout: 3000
+
+## 默认stf配置，正常情况下系统不使用
+stf:
+  token: 0e63ec34bf394617b7d13d1bb1e175fd9a0fbf88e9894244a481a6e6be7fca1f
+  api:
+    url: http://123:7100/
+    version: api/v1
+
+spring:
+  application:
+    name: aitest
+  main:
+    allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://39.102.48.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      username: aitest_mini
+      password: aitest_mini
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 60000
+      validation-query: SELECT 1 FROM DUAL
+      # validation-query-timeout: 5000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      #filters: #配置多个英文逗号分隔(统计，sql注入，log4j过滤)
+      filters: stat,wall
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      stat-view-servlet:
+        allow: aitest.testing-studio.com
+        #filters: stat,wall
+        #stat-view-servlet:
+        #enabled: true
+        #url-pattern: /druid/*
+    connection-init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mvc:
+    servlet:
+      load-on-startup: 1
+  #redis
+  # Redis数据库索引（默认为0）
+  redis:
+    database: 0
+    # Redis服务器地址
+    host: 47.105.117.0
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: tian@103
+    # 连接超时时间（毫秒）
+    #timeout:
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    port: 465
+    username: 1551994462@qq.com
+    password: yphjaiwbmwpvfiga
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.testerHome.aitest.entity
+  configuration:
+    mapUnderscoreToCamelCase: true
+files:
+  path: /aitest/apps
+  ##上传文件下载的基础地址，url为空时以本地服务器为准，否则以配置为准
+  server:
+    url:
+    port: 8086
+
+pics:
+  path: /aitest/user_pics
+
+appCrawler_conf:
+  path: /aitest/appCrawler_confs
+
+## appCrawler的jar包在aitest服务器(上传文件下载的基础地址)的路径和名称
+appCrawler:
+  jar:
+    path: /aitest/appcrawlerPath/
+    name: appcrawler-2.6.0-jar-with-dependencies.jar
+
+## 测试报告存放地址，在nginx服务器配置文件中指定的路径,后面不带目录分隔符 /
+report:
+  path: /app/prod/aitestweb
+  #token:
+  #单位秒
+  #expiration: 60
+  #secret: CEBASIGNSECRETDEV
+token:
+  expire:
+    seconds: 86400
+
+env:
+  key: prod
