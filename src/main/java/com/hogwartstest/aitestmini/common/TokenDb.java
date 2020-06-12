@@ -37,6 +37,16 @@ public class TokenDb {
         return tokenMap.put(token,tokenDto);
     }
 
+    //移除token
+    public TokenDto removeTokenDto(String token){
+
+        if(Objects.isNull(token)){
+            return null;
+        }
+
+        return tokenMap.remove(token);
+    }
+
     public boolean isLogin(String token){
         return tokenMap.get(token)!=null;
     }

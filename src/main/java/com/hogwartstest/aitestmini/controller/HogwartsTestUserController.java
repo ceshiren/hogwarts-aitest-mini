@@ -2,9 +2,11 @@ package com.hogwartstest.aitestmini.controller;
 
 import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
+import com.hogwartstest.aitestmini.constants.UserConstants;
 import com.hogwartstest.aitestmini.dto.AddUserDto;
 import com.hogwartstest.aitestmini.dto.LoginUserDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
+import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
@@ -15,6 +17,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -80,15 +83,33 @@ public class HogwartsTestUserController {
         return resultDto;
     }
 
-    @ApiOperation(value = "Restful方式登陆,前后端分离时登录接口")
-    @GetMapping("/{token}")
-    public ResultDto isLogin(@PathVariable String token) {
+    @ApiOperation(value = "登出接口")
+    @DeleteMapping("/logout")
+    public ResultDto logout(HttpServletRequest request) {
+
+        String token = request.getHeader(UserConstants.LOGIN_TOKEN);
+        boolean loginFlag = tokenDb.isLogin(token);
+
+        if(!loginFlag){
+            return ResultDto.fail("用户未登录，无需退出");
+        }
+
+        TokenDto tokenDto = tokenDb.removeTokenDto(token);
+
+        return ResultDto.success("成功",tokenDto);
+    }
+
+    @ApiOperation(value = "是否登录接口")
+    @GetMapping("/isLogin")
+    public ResultDto isLogin(HttpServletRequest request) {
+
+        String token = request.getHeader(UserConstants.LOGIN_TOKEN);
 
         boolean loginFlag = tokenDb.isLogin(token);
 
-        tokenDb.getTokenDto(token);
+        TokenDto tokenDto = tokenDb.getTokenDto(token);
 
-        return ResultDto.success("成功",tokenDb.getTokenDto(token));
+        return ResultDto.success("成功",tokenDto);
     }
 
 
