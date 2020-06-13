@@ -36,9 +36,6 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://39.102.48.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-      username: aitest_mini
-      password: aitest_mini
       initial-size: 10
       max-active: 100
       min-idle: 10
@@ -74,67 +71,9 @@ spring:
   mvc:
     servlet:
       load-on-startup: 1
-  #redis
-  # Redis数据库索引（默认为0）
-  redis:
-    database: 0
-    # Redis服务器地址
-    host: 47.105.117.0
-    # Redis服务器连接端口
-    port: 6379
-    # Redis服务器连接密码（默认为空）
-    password: tian@103
-    # 连接超时时间（毫秒）
-    #timeout:
-
-  mail:
-    default-encoding: UTF-8
-    host: smtp.qq.com
-    port: 465
-    username: 1551994462@qq.com
-    password: yphjaiwbmwpvfiga
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.testerHome.aitest.entity
+  type-aliases-package: com.hogwartstest.aitestmini.entity
   configuration:
     mapUnderscoreToCamelCase: true
-files:
-  path: /aitest/app
-  ##上传文件下载的基础地址，url为空时以本地服务器为准，否则以配置为准
-  server:
-    url:
-    port: 8083
-
-pics:
-  path: /aitest/user_pics
-
-appCrawler_conf:
-  path: /aitest/appCrawler_confs
-
-## appCrawler的jar包在aitest服务器(上传文件下载的基础地址)的路径和名称
-appCrawler:
-  jar:
-    path: /aitest/appcrawlerPath/
-    name: appcrawler-2.6.0-jar-with-dependencies.jar
-
-## 测试报告存放地址，在nginx服务器配置文件中指定的路径,后面不带目录分隔符 /
-report:
-  path: /app/dev/aitestweb
-   #path: E:\report
-#token:
-  #单位秒
-  #expiration: 60
-  #secret: CEBASIGNSECRETDEV
-token:
-  expire:
-    seconds: 86400
-
-#jenkins:
-  #url: http://47.94.250.51:8080
-  #username: aitest
-  #password: aitest
-
-##为customs时读取缓存配置开关数据
-env:
-  key: dev
