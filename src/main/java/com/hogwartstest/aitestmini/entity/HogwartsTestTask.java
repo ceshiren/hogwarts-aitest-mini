@@ -53,12 +53,12 @@ public class HogwartsTestTask extends BaseEntityNew {
      * 任务类型 1 执行测试任务 2 一键执行测试的任务
      */
     @Column(name = "task_type")
-    private Byte taskType;
+    private Integer taskType;
 
     /**
      * 状态 0 无效 1 新建 2 执行中 3 执行完成
      */
-    private Byte status;
+    private Integer status;
 
     /**
      * 创建时间

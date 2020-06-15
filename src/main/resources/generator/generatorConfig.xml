@@ -54,6 +54,8 @@
         <table schema="aitest_mini" tableName="hogwarts_test_task" domainObjectName="HogwartsTestTask" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            <columnOverride column="task_type" javaType="Integer" jdbcType="TINYINT" />
+            <columnOverride column="status" javaType="Integer" jdbcType="TINYINT" />
         </table>
 
         <!-- 生成测试任务和用例关联的相关类 -->

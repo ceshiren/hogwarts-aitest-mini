@@ -16,4 +16,30 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <update id="updateByCreateUserId">
+    update hogwarts_test_case t set t.del_flag = 0,t.update_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where t.create_user_id = #{createUserId}
+  </update>
+
+  <select id="count" resultType="int">
+    select count(1) from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
+
+    <if test="params.caseSign != null and params.caseSign != '' ">
+      and htc.case_sign like concat('%', #{params.caseSign}, '%')
+    </if>
+    and htc.del_flag = 1
+
+  </select>
+
+  <select id="list" resultType="HogwartsTestCase">
+    select * from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
+
+    <if test="params.caseSign != null and params.caseSign != '' ">
+      and htc.case_sign like concat('%', #{params.caseSign}, '%')
+    </if>
+    and htc.del_flag = 1
+    order by htc.update_time
+    limit #{pageNum}, #{pageSize}
+  </select>
+
 </mapper>

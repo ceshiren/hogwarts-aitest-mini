@@ -1,8 +1,8 @@
 package com.hogwartstest.aitestmini.common;
 
 import com.hogwartstest.aitestmini.dto.TokenDto;
-import com.hogwartstest.aitestmini.entity.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,11 @@ public class TokenDb {
     }
 
     public TokenDto getTokenDto(String token){
+
+        if(StringUtils.isEmpty(token)){
+            return new TokenDto();
+        }
+
         return tokenMap.get(token);
     }
 

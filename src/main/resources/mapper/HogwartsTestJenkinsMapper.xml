@@ -18,4 +18,25 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <select id="count" resultType="int">
+    select count(1) from hogwarts_test_jenkins htj where htj.create_user_id =  #{params.createUserId}
+
+    <if test="params.name != null and params.name != '' ">
+        and htj.name = #{params.name}
+    </if>
+
+  </select>
+
+  <select id="list" resultType="HogwartsTestJenkins">
+    select * from hogwarts_test_jenkins htj where htj.create_user_id =  #{params.createUserId}
+
+    <if test="params.name != null and params.name != '' ">
+      and htj.name = #{params.name}
+    </if>
+    order by htj.update_time
+    limit #{pageNum}, #{pageSize}
+  </select>
+
+
 </mapper>

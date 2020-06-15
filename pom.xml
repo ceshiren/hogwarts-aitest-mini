@@ -142,12 +142,6 @@
             <version>0.3.8</version>
         </dependency>
 
-        <!--spring切面aop模块  -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-
     </dependencies>
 
     <profiles>

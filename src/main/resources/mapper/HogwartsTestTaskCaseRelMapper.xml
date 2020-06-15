@@ -12,4 +12,30 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+
+  <select id="listDetail" resultType="com.hogwartstest.aitestmini.dto.testcase.HogwartsTestTaskCaseRelDetailDto">
+
+  SELECT tt.id,tt.task_id as taskId,tt.case_id as caseId,
+    htc.package_name as packageName,htc.class_name as className,htc.method_name as methodName,
+    htc.case_sign as caseSign,htc.remark,htc.del_flag as delFlag,
+    htc.create_user_id as createUserId,tt.create_time as createTime,tt.update_time as updateTime
+
+    from (
+
+    select * from hogwarts_test_task_case_rel httcr
+    where httcr.create_user_id = #{params.createUserId}
+    and httcr.task_id = #{params.taskId}
+
+    ) tt
+    LEFT JOIN hogwarts_test_case htc on tt.case_id = htc.id
+    <if test="params.caseSign != null and params.caseSign != '' ">
+      and htc.case_sign like concat('%', #{params.caseSign}, '%')
+    </if>
+    order by htc.update_time
+    <if test="pageNum != null and pageSize != null ">
+      limit #{pageNum}, #{pageSize}
+    </if>
+
+  </select>
+
 </mapper>
