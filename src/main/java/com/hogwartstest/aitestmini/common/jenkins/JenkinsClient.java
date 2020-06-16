@@ -13,7 +13,6 @@ import com.offbytwo.jenkins.client.JenkinsHttpConnection;
 import com.offbytwo.jenkins.helper.JenkinsVersion;
 import com.offbytwo.jenkins.model.Queue;
 import com.offbytwo.jenkins.model.*;
-import com.sun.xml.internal.ws.util.xml.XmlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
