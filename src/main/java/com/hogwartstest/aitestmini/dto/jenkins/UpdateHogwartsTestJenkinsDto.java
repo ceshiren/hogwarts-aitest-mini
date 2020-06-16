@@ -62,4 +62,10 @@ public class UpdateHogwartsTestJenkinsDto extends BaseEntityNew {
     @ApiModelProperty(value="Jenkins备注",required=true)
     private String remark;
 
+    /**
+     *
+     */
+    @ApiModelProperty(value="是否设置为默认服务器 1 是 0 否",required=true)
+    private Integer defaultJenkinsFlag = 0;
+
 }

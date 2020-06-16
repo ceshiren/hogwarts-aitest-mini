@@ -14,5 +14,7 @@ public class TokenDto {
 
     private String userName;
 
+    private Integer defaultJenkinsId;
+
 
 }

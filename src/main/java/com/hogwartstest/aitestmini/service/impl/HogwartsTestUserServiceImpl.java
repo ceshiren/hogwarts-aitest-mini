@@ -1,13 +1,20 @@
 package com.hogwartstest.aitestmini.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
+import com.hogwartstest.aitestmini.common.jenkins.JenkinsClient;
 import com.hogwartstest.aitestmini.constants.UserConstants;
+import com.hogwartstest.aitestmini.dao.HogwartsTestJenkinsMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
+import com.hogwartstest.aitestmini.dto.RequestInfoDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;
+import com.hogwartstest.aitestmini.dto.jenkins.OperateJenkinsJobDto;
+import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
+import com.hogwartstest.aitestmini.util.JenkinsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +29,12 @@ public class HogwartsTestUserServiceImpl implements HogwartsTestUserService {
 
 	@Autowired
 	private HogwartsTestUserMapper hogwartsTestUserMapper;
+
+	@Autowired
+	private HogwartsTestJenkinsMapper hogwartsTestJenkinsMapper;
+
+	@Autowired
+	private JenkinsClient jenkinsClient;
 
 	@Autowired
 	private TokenDb tokenDb;
@@ -91,6 +104,7 @@ public class HogwartsTestUserServiceImpl implements HogwartsTestUserService {
 		TokenDto tokenDto = new TokenDto();
 		tokenDto.setUserId(resultHogwartsTestUser.getId());
 		tokenDto.setUserName(userName);
+		tokenDto.setDefaultJenkinsId(resultHogwartsTestUser.getDefaultJenkinsId());
 
 		tokenDb.addTokenDto(tokenStr, tokenDto);
 
@@ -107,6 +121,61 @@ public class HogwartsTestUserServiceImpl implements HogwartsTestUserService {
 	 */
 	@Override
 	public ResultDto<HogwartsTestUser> changePassword(String username, String oldPassword, String newPassword) {
+		return null;
+	}
+
+	/**
+	 * 生成测试用例
+	 *
+	 * @param tokenDto
+	 * @param requestInfoDto
+	 * @return
+	 */
+	@Override
+	public ResultDto<HogwartsTestUser> parse(TokenDto tokenDto, RequestInfoDto requestInfoDto) {
+
+		log.info("=====生成测试用例-Service入参====："+ JSONObject.toJSONString(tokenDto) +"+++++"+ JSONObject.toJSONString(requestInfoDto));
+
+		//拼接Job名称
+		String jobName = JenkinsUtil.getCreateCaseJobName(tokenDto.getUserId());
+
+		Integer defaultJenkinsId = tokenDto.getDefaultJenkinsId();
+
+		if(Objects.isNull(defaultJenkinsId)){
+			return ResultDto.fail("未配置默认Jenkins");
+		}
+
+		HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
+		queryHogwartsTestJenkins.setId(defaultJenkinsId);
+		queryHogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
+
+		HogwartsTestJenkins resultHogwartsTestJenkins = hogwartsTestJenkinsMapper.selectOne(queryHogwartsTestJenkins);
+
+		if(Objects.isNull(resultHogwartsTestJenkins)){
+			return ResultDto.fail("默认Jenkins不存在或已失效");
+		}
+		//构建参数组装
+		Map<String, String> params = new HashMap<>();
+
+		params.put("gitUrl",resultHogwartsTestJenkins.getGitUrl());
+		params.put("version",resultHogwartsTestJenkins.getGitBranch());
+		params.put("jobName",jobName);
+		params.put("saveListUrl",requestInfoDto.getRequestUrl());
+		params.put("saveListToken",requestInfoDto.getToken());
+
+
+		log.info("=====生成用例Job的构建参数组装====：" +JSONObject.toJSONString(params));
+
+		OperateJenkinsJobDto operateJenkinsJobDto = new OperateJenkinsJobDto();
+
+		operateJenkinsJobDto.setHogwartsTestJenkins(resultHogwartsTestJenkins);
+		operateJenkinsJobDto.setTokenDto(tokenDto);
+		operateJenkinsJobDto.setParams(params);
+		operateJenkinsJobDto.setJobType(1);
+
+
+		jenkinsClient.operateJenkinsJob(operateJenkinsJobDto);
+
 		return null;
 	}
 

@@ -56,7 +56,7 @@ public class HogwartsTestCaseController {
      * @return
      */
     @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
-    @PostMapping
+    @PostMapping("list")
     public ResultDto<HogwartsTestUser> saveList(HttpServletRequest request, @RequestBody SaveTestCaseListDto saveTestCaseListDto){
 
         log.info("=====批量新增测试用例-请求入参====："+ JSONObject.toJSONString(saveTestCaseListDto));
@@ -141,7 +141,7 @@ public class HogwartsTestCaseController {
      * @param caseId
      * @return
      */
-    @ApiOperation(value = "根据jenkinsId删除")
+    @ApiOperation(value = "根据caseId删除")
     @DeleteMapping("/{caseId}")
     public ResultDto<HogwartsTestCase> delete(HttpServletRequest request, @PathVariable Integer caseId){
 

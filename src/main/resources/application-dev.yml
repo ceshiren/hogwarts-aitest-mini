@@ -1,6 +1,6 @@
 
 server:
-  port: 8093
+  port: 8099
   connection-timeout: 18000000
   servlet:
     session:
@@ -36,6 +36,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://39.102.48.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      username: aitest_mini
+      password: hogwarts_test_mini
       initial-size: 10
       max-active: 100
       min-idle: 10
@@ -62,7 +65,7 @@ spring:
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    date-time-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   servlet:
     multipart:

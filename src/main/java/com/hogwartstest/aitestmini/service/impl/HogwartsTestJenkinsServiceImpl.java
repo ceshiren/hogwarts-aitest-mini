@@ -1,15 +1,18 @@
 package com.hogwartstest.aitestmini.service.impl;
 
 import com.hogwartstest.aitestmini.dao.HogwartsTestJenkinsMapper;
+import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
+import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestJenkinsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +25,10 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	@Autowired
 	private HogwartsTestJenkinsMapper hogwartsTestJenkinsMapper;
 
+	@Autowired
+	private HogwartsTestUserMapper hogwartsTestUserMapper;
+
+
 	/**
 	 * 新增Jenkins信息
 	 *
@@ -29,11 +36,26 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 * @return
 	 */
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public ResultDto<HogwartsTestJenkins> save(HogwartsTestJenkins hogwartsTestJenkins) {
 
 		hogwartsTestJenkins.setCreateTime(new Date());
 		hogwartsTestJenkins.setUpdateTime(new Date());
-		hogwartsTestJenkinsMapper.insert(hogwartsTestJenkins);
+		hogwartsTestJenkinsMapper.insertUseGeneratedKeys(hogwartsTestJenkins);
+
+		Integer defaultJenkinsFlag = hogwartsTestJenkins.getDefaultJenkinsFlag();
+
+		if(Objects.nonNull(defaultJenkinsFlag) && defaultJenkinsFlag==1){
+
+			Integer createUserId = hogwartsTestJenkins.getCreateUserId();
+			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
+			hogwartsTestUser.setId(createUserId);
+			hogwartsTestUser.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+
+			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
+
+		}
+
 		return ResultDto.success("成功", hogwartsTestJenkins);
 	}
 
@@ -44,6 +66,7 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 * @return createUserId
 	 */
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public ResultDto<HogwartsTestJenkins> delete(Integer jenkinsId,Integer createUserId) {
 
 		HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
@@ -58,6 +81,22 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 			return ResultDto.fail("未查到Jenkins信息");
 		}
 
+		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
+		queryHogwartsTestUser.setId(createUserId);
+
+		HogwartsTestUser reslutHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
+
+		Integer defaultJenkinsId = reslutHogwartsTestUser.getDefaultJenkinsId();
+
+		if(Objects.nonNull(defaultJenkinsId) && defaultJenkinsId.equals(jenkinsId)){
+
+			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
+			hogwartsTestUser.setId(createUserId);
+			hogwartsTestUser.setDefaultJenkinsId(null);
+			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
+
+		}
+
 		hogwartsTestJenkinsMapper.deleteByPrimaryKey(jenkinsId);
 
 		return ResultDto.success("成功");
@@ -70,6 +109,7 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 * @return
 	 */
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public ResultDto<HogwartsTestJenkins> update(HogwartsTestJenkins hogwartsTestJenkins) {
 
 		HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
@@ -88,6 +128,19 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 		hogwartsTestJenkins.setUpdateTime(new Date());
 
 		hogwartsTestJenkinsMapper.updateByPrimaryKey(hogwartsTestJenkins);
+
+		Integer defaultJenkinsFlag = hogwartsTestJenkins.getDefaultJenkinsFlag();
+
+		if(Objects.nonNull(defaultJenkinsFlag) && defaultJenkinsFlag==1){
+
+			Integer createUserId = hogwartsTestJenkins.getCreateUserId();
+			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
+			hogwartsTestUser.setId(createUserId);
+			hogwartsTestUser.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+
+			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
+
+		}
 
 		return ResultDto.success("成功");
 	}

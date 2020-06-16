@@ -46,5 +46,15 @@ public interface Constants {
 	 */
 	public final static Integer TASK_TYPE_TWO = 2;
 
+	/**
+	 * Jenkins生成用例的Job
+	 */
+	public final static Integer JOB_TYPE_ONE = 1;
+
+	/**
+	 * Jenkins执行测试的Job
+	 */
+	public final static Integer JOB_TYPE_TWO = 2;
+
 
 }

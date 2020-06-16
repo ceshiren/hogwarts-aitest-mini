@@ -1,5 +1,7 @@
 package com.hogwartstest.aitestmini.util;
 
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +30,24 @@ public class StrUtil {
                 .replace("[","")
                 .replace("]","");
 
+    }
+
+    public static String getHostAndPort(String requestUrl) {
+
+        if(StringUtils.isEmpty(requestUrl)){
+            return "";
+        }
+
+        String http = "";
+        String tempUrl = "";
+        if(requestUrl.contains("://")){
+            http = requestUrl.substring(0,requestUrl.indexOf("://")+3);
+            tempUrl = requestUrl.substring(requestUrl.indexOf("://")+3);
+        }
+        if(tempUrl.contains("/")){
+            tempUrl = tempUrl.substring(0,tempUrl.indexOf("/"));
+        }
+        return http+tempUrl;
     }
 
 }
