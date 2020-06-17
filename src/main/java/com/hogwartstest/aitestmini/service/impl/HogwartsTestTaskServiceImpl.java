@@ -1,14 +1,15 @@
 package com.hogwartstest.aitestmini.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hogwartstest.aitestmini.common.ServiceException;
+import com.hogwartstest.aitestmini.common.jenkins.JenkinsClient;
 import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.dao.HogwartsTestCaseMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestJenkinsMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestTaskCaseRelMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestTaskMapper;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
-import com.hogwartstest.aitestmini.dto.ResultDto;
+import com.hogwartstest.aitestmini.dto.*;
+import com.hogwartstest.aitestmini.dto.jenkins.OperateJenkinsJobDto;
 import com.hogwartstest.aitestmini.dto.task.AddHogwartsTestTaskDto;
 import com.hogwartstest.aitestmini.dto.task.QueryHogwartsTestTaskListDto;
 import com.hogwartstest.aitestmini.dto.task.TestTaskDto;
@@ -17,6 +18,7 @@ import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 import com.hogwartstest.aitestmini.entity.HogwartsTestTask;
 import com.hogwartstest.aitestmini.entity.HogwartsTestTaskCaseRel;
 import com.hogwartstest.aitestmini.service.HogwartsTestTaskService;
+import com.hogwartstest.aitestmini.util.JenkinsUtil;
 import com.hogwartstest.aitestmini.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -44,6 +44,9 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
     @Autowired
     private HogwartsTestTaskCaseRelMapper hogwartsTestTaskCaseRelMapper;
+
+    @Autowired
+    private JenkinsClient jenkinsClient;
 
     /**
      * 新增测试任务信息
@@ -223,8 +226,92 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
      * @return
      */
     @Override
-    public ResultDto<HogwartsTestTask> startTask(HogwartsTestTask hogwartsTestTask) {
-        return null;
+    public ResultDto startTask(TokenDto tokenDto, RequestInfoDto requestInfoDto, HogwartsTestTask hogwartsTestTask) throws IOException {
+        log.info("=====开始测试-Service请求入参====："+ JSONObject.toJSONString(requestInfoDto)+"+++++"+JSONObject.toJSONString(hogwartsTestTask));
+        if(Objects.isNull(hogwartsTestTask)){
+            return ResultDto.fail("测试任务参数不能为空");
+        }
+
+        //拼接Job名称
+        String jobName = JenkinsUtil.getCreateCaseJobName(tokenDto.getUserId());
+
+        Integer defaultJenkinsId = tokenDto.getDefaultJenkinsId();
+
+        if(Objects.isNull(defaultJenkinsId)){
+            return ResultDto.fail("未配置默认Jenkins");
+        }
+
+        HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
+        queryHogwartsTestJenkins.setId(defaultJenkinsId);
+        queryHogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
+
+        HogwartsTestJenkins resultHogwartsTestJenkins = hogwartsTestJenkinsMapper.selectOne(queryHogwartsTestJenkins);
+
+        if(Objects.isNull(resultHogwartsTestJenkins)){
+            return ResultDto.fail("默认Jenkins不存在或已失效");
+        }
+
+        HogwartsTestTask queryHogwartsTestTask = new HogwartsTestTask();
+
+        queryHogwartsTestTask.setId(hogwartsTestTask.getId());
+        queryHogwartsTestTask.setCreateUserId(hogwartsTestTask.getCreateUserId());
+
+        HogwartsTestTask resultHogwartsTestTask = hogwartsTestTaskMapper.selectOne(queryHogwartsTestTask);
+
+
+        if(Objects.isNull(resultHogwartsTestTask)){
+            String tips = "未查到测试任务";
+            log.info(tips+queryHogwartsTestTask.getId());
+            return ResultDto.fail(tips);
+        }
+
+        String testCommandStr =  hogwartsTestTask.getTestCommand();
+        if(StringUtils.isEmpty(testCommandStr)){
+            testCommandStr = resultHogwartsTestTask.getTestCommand();
+        }
+
+        if(StringUtils.isEmpty(testCommandStr)){
+            return ResultDto.fail("任务的测试命令不能为空");
+        }
+
+
+        resultHogwartsTestTask.setStatus(Constants.STATUS_TWO);
+
+        StringBuilder testCommand = new StringBuilder();
+
+        //添加保存测试任务接口拼装的mvn test 命令
+        testCommand.append(testCommandStr);
+        testCommand.append(" \n");
+
+
+        StringBuilder updateStatusUrl = JenkinsUtil.getUpdateTaskStatusUrl(requestInfoDto, resultHogwartsTestTask);
+
+        //构建参数组装
+        Map<String, String> params = new HashMap<>();
+
+        params.put("createCaseJobName",JenkinsUtil.getCreateCaseJobName(resultHogwartsTestTask.getCreateUserId()));
+        params.put("testCommand",testCommand.toString());
+        params.put("updateStatusData",updateStatusUrl.toString());
+
+        log.info("=====执行测试Job的构建参数组装====：" +JSONObject.toJSONString(params));
+        log.info("=====执行测试Job的修改任务状态的数据组装====：" +updateStatusUrl);
+
+
+        OperateJenkinsJobDto operateJenkinsJobDto = new OperateJenkinsJobDto();
+
+        operateJenkinsJobDto.setJobType(Constants.JOB_TYPE_TWO);
+        operateJenkinsJobDto.setParams(params);
+        operateJenkinsJobDto.setTokenDto(tokenDto);
+        operateJenkinsJobDto.setHogwartsTestJenkins(resultHogwartsTestJenkins);
+
+        operateJenkinsJobDto.setParams(params);
+
+        ResultDto resultDto = jenkinsClient.operateJenkinsJob(operateJenkinsJobDto);
+        //此处抛出异常，阻止事务提交
+        if(0 == resultDto.getResultCode()){
+            throw new ServiceException("执行测试时异常-"+resultDto.getMessage());
+        }
+        return resultDto;
     }
 
     /**

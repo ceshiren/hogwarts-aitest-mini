@@ -6,6 +6,8 @@ import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 
+import java.io.IOException;
+
 public interface HogwartsTestUserService {
 
 
@@ -34,6 +36,6 @@ public interface HogwartsTestUserService {
 	 * @param requestInfoDto
 	 * @return
 	 */
-	ResultDto<HogwartsTestUser> parse(TokenDto tokenDto, RequestInfoDto requestInfoDto);
+	ResultDto<HogwartsTestUser> parse(TokenDto tokenDto, RequestInfoDto requestInfoDto) throws IOException;
 
 }

@@ -4,16 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.constants.UserConstants;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
+import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.task.*;
-import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestTask;
 import com.hogwartstest.aitestmini.service.HogwartsTestTaskService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
+import com.hogwartstest.aitestmini.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -222,6 +221,48 @@ public class HogwartsTestTaskController {
 
         ResultDto<HogwartsTestTask> resultDto = hogwartsTestTaskService.updateStatus(hogwartsTestTask);
         return resultDto;
+    }
+
+    /**
+     * 开始测试接口
+     * @param startTestDto
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("start")
+    @ApiOperation(value = "开始测试", notes = "开始测试-说明", httpMethod = "POST", response = ResultDto.class)
+    public ResultDto testStart(HttpServletRequest request
+            ,@ApiParam(name="修改测试任务状态对象", required=true)@RequestBody StartTestDto startTestDto) throws Exception {
+        log.info("=====开始测试-请求入参====："+ JSONObject.toJSONString(startTestDto));
+
+        if(Objects.isNull(startTestDto)){
+            return ResultDto.fail("开始测试请求不能为空");
+        }
+        if(Objects.isNull(startTestDto.getTaskId())){
+            return ResultDto.fail("任务id不能为空");
+        }
+
+        String token = request.getHeader(UserConstants.LOGIN_TOKEN);
+        log.info("token== "+token);
+
+        HogwartsTestTask hogwartsTestTask = new HogwartsTestTask();
+        hogwartsTestTask.setId(startTestDto.getTaskId());
+        hogwartsTestTask.setTestCommand(startTestDto.getTestCommand());
+        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
+        hogwartsTestTask.setCreateUserId(tokenDto.getUserId());
+        hogwartsTestTask.setTestJenkinsId(tokenDto.getDefaultJenkinsId());
+
+
+        String url = request.getRequestURL().toString();
+        log.info("请求地址== "+url);
+        url = StrUtil.getHostAndPort(request.getRequestURL().toString());
+
+        RequestInfoDto requestInfoDto = new RequestInfoDto();
+        requestInfoDto.setBaseUrl(url);
+        requestInfoDto.setRequestUrl(url);
+        requestInfoDto.setToken(token);
+        log.info("requestInfoDto== "+ JSONObject.toJSONString(requestInfoDto));
+        return hogwartsTestTaskService.startTask(tokenDto, requestInfoDto, hogwartsTestTask);
     }
 
 }

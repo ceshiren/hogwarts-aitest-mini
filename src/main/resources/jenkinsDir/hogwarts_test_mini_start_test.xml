@@ -1,0 +1,84 @@
+<matrix-project plugin="matrix-project@1.14">
+    <actions/>
+    <description/>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <hudson.model.ParametersDefinitionProperty>
+            <parameterDefinitions>
+                <hudson.model.StringParameterDefinition>
+                    <name>createCaseJobName</name>
+                    <description>创建测试用例的job名称</description>
+                    <defaultValue>无/</defaultValue>
+                    <trim>true</trim>
+                </hudson.model.StringParameterDefinition>
+                <hudson.model.StringParameterDefinition>
+                    <name>testCommand</name>
+                    <description>测试命令</description>
+                    <defaultValue>mvn</defaultValue>
+                    <trim>true</trim>
+                </hudson.model.StringParameterDefinition>
+                <hudson.model.StringParameterDefinition>
+                    <name>updateStatusData</name>
+                    <description>修改任务状态的数据</description>
+                    <defaultValue/>
+                    <trim>true</trim>
+                </hudson.model.StringParameterDefinition>
+            </parameterDefinitions>
+        </hudson.model.ParametersDefinitionProperty>
+    </properties>
+    <scm class="hudson.scm.NullSCM"/>
+    <assignedNode>jenkins_slave</assignedNode>
+    <canRoam>false</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <axes>
+        <hudson.matrix.LabelAxis>
+            <name>label</name>
+            <values>
+                <string>jenkins_slave</string>
+            </values>
+        </hudson.matrix.LabelAxis>
+    </axes>
+    <builders>
+        <hudson.tasks.Shell>
+            <command>
+                rsync -a /home/hogwarts/jenkins_workspace/workspace/${createCaseJobName}/. .
+                pwd
+                . ~/.bash_profile
+                mvn clean || true
+                ${testCommand} || true
+                eval "${updateStatusData}"
+            </command>
+        </hudson.tasks.Shell>
+    </builders>
+    <publishers>
+        <ru.yandex.qatools.allure.jenkins.AllureReportPublisher plugin="allure-jenkins-plugin@2.28.1">
+            <configPath/>
+            <jdk/>
+            <properties/>
+            <results>
+                <ru.yandex.qatools.allure.jenkins.config.ResultsConfig>
+                    <path>target/allure-results</path>
+                </ru.yandex.qatools.allure.jenkins.config.ResultsConfig>
+            </results>
+            <reportBuildPolicy>ALWAYS</reportBuildPolicy>
+            <includeProperties>false</includeProperties>
+            <disabled>false</disabled>
+            <report>allure-report</report>
+        </ru.yandex.qatools.allure.jenkins.AllureReportPublisher>
+    </publishers>
+    <buildWrappers>
+        <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.37">
+            <deleteDirs>false</deleteDirs>
+            <cleanupParameter/>
+            <externalDelete/>
+            <disableDeferredWipeout>false</disableDeferredWipeout>
+        </hudson.plugins.ws__cleanup.PreBuildCleanup>
+    </buildWrappers>
+    <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
+        <runSequentially>false</runSequentially>
+    </executionStrategy>
+</matrix-project>

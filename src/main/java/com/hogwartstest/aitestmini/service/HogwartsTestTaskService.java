@@ -1,11 +1,11 @@
 package com.hogwartstest.aitestmini.service;
 
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
-import com.hogwartstest.aitestmini.dto.ResultDto;
+import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.task.QueryHogwartsTestTaskListDto;
 import com.hogwartstest.aitestmini.dto.task.TestTaskDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestTask;
+
+import java.io.IOException;
 
 public interface HogwartsTestTaskService {
 
@@ -50,7 +50,7 @@ public interface HogwartsTestTaskService {
 	 * @param hogwartsTestTask
 	 * @return
 	 */
-	ResultDto<HogwartsTestTask> startTask(HogwartsTestTask hogwartsTestTask);
+	ResultDto startTask(TokenDto tokenDto, RequestInfoDto requestInfoDto, HogwartsTestTask hogwartsTestTask) throws IOException;
 
 	/**
 	 *  修改测试任务状态信息

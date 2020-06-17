@@ -6,22 +6,23 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @ApiModel(value="执行测试任务类",description="请求参数类" )
 @Data
-public class StartTestDto extends BaseDto {
+public class TaskReportDto extends BaseDto {
 
     /**
-     * ID
+     * 任务总和
      */
-    @ApiModelProperty(value="测试任务id",required=true, example = "112")
+    @ApiModelProperty(value="任务总和",required=true)
     @NotNull
-    private Integer taskId;
+    private Integer taskSum;
 
     /**
-     * 执行测试的命令脚本
+     * 任务数据对象
      */
-    @ApiModelProperty(value="执行测试的命令脚本", required = true, example = "mvn test")
-    private String testCommand;
+    @ApiModelProperty(value="任务数据对象", required = true)
+    private List<TaskDataDto> taskDataDtoList;
 
 }

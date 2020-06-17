@@ -1,6 +1,6 @@
 
 server:
-  port: 8099
+  port: 8093
   connection-timeout: 18000000
   servlet:
     session:

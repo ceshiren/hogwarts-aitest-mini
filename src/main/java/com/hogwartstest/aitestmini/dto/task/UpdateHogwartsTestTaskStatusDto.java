@@ -8,11 +8,18 @@ import lombok.Data;
 @ApiModel(value="修改任务状态对象")
 @Data
 public class UpdateHogwartsTestTaskStatusDto extends BaseEntityNew {
+
     /**
      * ID
      */
     @ApiModelProperty(value="任务主键",required=true)
     private Integer taskId;
+
+    /**
+     * ID
+     */
+    @ApiModelProperty(value="Jenkins主键",required=true)
+    private Integer jenkinsId;
 
     /**
      *

@@ -9,19 +9,25 @@ import javax.validation.constraints.NotNull;
 
 @ApiModel(value="执行测试任务类",description="请求参数类" )
 @Data
-public class StartTestDto extends BaseDto {
+public class TaskDataDto extends BaseDto {
 
     /**
-     * ID
+     * 任务数量
      */
-    @ApiModelProperty(value="测试任务id",required=true, example = "112")
+    @ApiModelProperty(value="任务数量",required=true)
     @NotNull
-    private Integer taskId;
+    private Integer taskCount;
 
     /**
-     * 执行测试的命令脚本
+     * 分类的key
      */
-    @ApiModelProperty(value="执行测试的命令脚本", required = true, example = "mvn test")
-    private String testCommand;
+    @ApiModelProperty(value="分类的key", required = true)
+    private Integer taskKey;
+
+    /**
+     * 描述
+     */
+    @ApiModelProperty(value="描述", required = true)
+    private String desc;
 
 }

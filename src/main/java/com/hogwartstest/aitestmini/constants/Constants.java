@@ -47,6 +47,12 @@ public interface Constants {
 	public final static Integer TASK_TYPE_TWO = 2;
 
 	/**
+	 * 90 生成用例的任务
+	 */
+	public final static Integer TASK_TYPE_90 = 90;
+
+
+	/**
 	 * Jenkins生成用例的Job
 	 */
 	public final static Integer JOB_TYPE_ONE = 1;
@@ -55,6 +61,15 @@ public interface Constants {
 	 * Jenkins执行测试的Job
 	 */
 	public final static Integer JOB_TYPE_TWO = 2;
+
+	/**
+	 * 任务类型 普通测试任务
+	 */
+	public final static Integer TASK_TYPE_UNIT = 1;
+	/**
+	 * 任务类型 一键执行测试任务
+	 */
+	public final static Integer TASK_TYPE_QUICK = 2;
 
 
 }
