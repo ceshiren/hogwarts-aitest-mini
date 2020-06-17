@@ -63,7 +63,7 @@ public class HogwartsTesReportController {
     }
 
     /**
-     * 根据任务类型获取任务统计信息
+     * 根据任务类型获取任务统计信息 - 饼状图
      * @return
      */
     @ApiOperation(value = "根据任务类型获取任务统计信息")
@@ -79,7 +79,7 @@ public class HogwartsTesReportController {
     }
 
     /**
-     * 根据任务状态获取任务统计信息
+     * 根据任务状态获取任务统计信息 - 饼状图
      * @return
      */
     @ApiOperation(value = "根据任务状态获取任务统计信息")
@@ -95,7 +95,7 @@ public class HogwartsTesReportController {
     }
 
     /**
-     * 任务中用例的数量统计信息
+     * 任务中用例的数量统计信息 - 折线图
      * @param request
      * @param start 按时间倒叙开始序号
      * @param end 按时间倒叙结束序号

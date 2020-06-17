@@ -232,9 +232,6 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
             return ResultDto.fail("测试任务参数不能为空");
         }
 
-        //拼接Job名称
-        String jobName = JenkinsUtil.getCreateCaseJobName(tokenDto.getUserId());
-
         Integer defaultJenkinsId = tokenDto.getDefaultJenkinsId();
 
         if(Objects.isNull(defaultJenkinsId)){
