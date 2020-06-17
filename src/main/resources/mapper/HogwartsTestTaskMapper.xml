@@ -28,7 +28,7 @@
 
   </select>
 
-  <select id="list" resultType="HogwartsTestJenkins">
+  <select id="list" resultType="HogwartsTestTask">
     select * from hogwarts_test_task htt where htt.create_user_id =  #{params.createUserId}
 
     <if test="params.name != null and params.name != '' ">
@@ -46,7 +46,7 @@
     select count(1) taskCount, status taskKey from hogwarts_test_task where create_user_id = #{createUserId} GROUP BY status
   </select>
 
-  <select id="getCaseCountByTask" resultType="HogwartsTestJenkins">
+  <select id="getCaseCountByTask" resultType="HogwartsTestTask">
     select * FROM hogwarts_test_task where create_user_id = #{createUserId} ORDER BY update_time
     <if test="start != null and end != null ">
       limit #{start}, #{end}
