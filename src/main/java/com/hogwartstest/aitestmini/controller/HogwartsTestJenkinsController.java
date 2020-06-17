@@ -158,13 +158,14 @@ public class HogwartsTestJenkinsController {
     @GetMapping("/list")
     public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(HttpServletRequest request, PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest){
 
-        log.info("根据jenkinsId删除-入参= "+ JSONObject.toJSONString(pageTableRequest));
-
         if(Objects.isNull(pageTableRequest)){
             return ResultDto.success("列表查询参数不能为空");
         }
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
+
+        log.info("列表查询-入参= "+ JSONObject.toJSONString(pageTableRequest) + "tokenDto=  " +JSONObject.toJSONString(tokenDto));
+
         QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
 
         if(Objects.isNull(params)){

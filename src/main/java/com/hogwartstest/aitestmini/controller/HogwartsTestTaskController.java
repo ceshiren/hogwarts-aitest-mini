@@ -49,24 +49,22 @@ public class HogwartsTestTaskController {
         log.info("添加测试任务-入参= "+ JSONObject.toJSONString(testTaskDto));
 
         if(Objects.isNull(testTaskDto)){
-            return ResultDto.success("测试任务入参不能为空");
+            return ResultDto.fail("测试任务入参不能为空");
         }
 
         AddHogwartsTestTaskDto addHogwartsTestTaskDto = testTaskDto.getTestTask();
 
         if(Objects.isNull(addHogwartsTestTaskDto)){
-            return ResultDto.success("测试任务不能为空");
+            return ResultDto.fail("测试任务不能为空");
         }
 
         if(Objects.isNull(addHogwartsTestTaskDto.getName())){
-            return ResultDto.success("测试任务名称不能为空");
-        }
-        if(Objects.isNull(addHogwartsTestTaskDto.getTestJenkinsId())){
-            return ResultDto.success("测试任务的运行Jenkins不能为空");
+            return ResultDto.fail("测试任务名称不能为空");
         }
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         addHogwartsTestTaskDto.setCreateUserId(tokenDto.getUserId());
+        addHogwartsTestTaskDto.setTestJenkinsId(tokenDto.getDefaultJenkinsId());
 
         ResultDto<HogwartsTestTask> resultDto = hogwartsTestTaskService.save(testTaskDto, Constants.TASK_TYPE_ONE);
         return resultDto;
@@ -84,19 +82,19 @@ public class HogwartsTestTaskController {
         log.info("修改测试任务-入参= "+ JSONObject.toJSONString(updateHogwartsTestTaskDto));
 
         if(Objects.isNull(updateHogwartsTestTaskDto)){
-            return ResultDto.success("测试任务信息不能为空");
+            return ResultDto.fail("测试任务信息不能为空");
         }
 
         Integer taskId = updateHogwartsTestTaskDto.getId();
         String name = updateHogwartsTestTaskDto.getName();
 
         if(Objects.isNull(taskId)){
-            return ResultDto.success("任务id不能为空");
+            return ResultDto.fail("任务id不能为空");
         }
 
 
         if(StringUtils.isEmpty(name)){
-            return ResultDto.success("任务名称不能为空");
+            return ResultDto.fail("任务名称不能为空");
         }
 
         HogwartsTestTask hogwartsTestTask = new HogwartsTestTask();
