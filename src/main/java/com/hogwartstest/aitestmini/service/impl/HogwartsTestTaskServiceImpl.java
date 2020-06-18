@@ -166,7 +166,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
         result.setName(hogwartsTestTask.getName());
         result.setRemark(hogwartsTestTask.getRemark());
 
-        hogwartsTestTaskMapper.updateByPrimaryKey(result);
+        hogwartsTestTaskMapper.updateByPrimaryKeySelective(result);
 
         return ResultDto.success("成功");
     }

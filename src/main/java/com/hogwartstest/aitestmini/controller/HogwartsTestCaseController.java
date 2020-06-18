@@ -57,7 +57,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
     @PostMapping("list")
-    public ResultDto<HogwartsTestUser> saveList(HttpServletRequest request, @RequestBody SaveTestCaseListDto saveTestCaseListDto){
+    public ResultDto saveList(HttpServletRequest request, @RequestBody SaveTestCaseListDto saveTestCaseListDto){
 
         log.info("=====批量新增测试用例-请求入参====："+ JSONObject.toJSONString(saveTestCaseListDto));
 
