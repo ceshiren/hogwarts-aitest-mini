@@ -357,7 +357,8 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         log.info("testCommand.toString()== "+testCommand.toString() + "  runCommand== " + runCommand);
 
-        testCommand.append(runCommand + "-Dtest=");
+        //-Dtest=空格很重要，不然命令会失效
+        testCommand.append(runCommand + " -Dtest=");
         //后面具体按类型细分进行不同的拼装
         int testCaseListSize = testCaseList.size();
         //后面具体按类型细分进行不同的拼装
