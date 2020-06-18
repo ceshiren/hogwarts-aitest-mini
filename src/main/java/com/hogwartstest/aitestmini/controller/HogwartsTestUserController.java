@@ -107,7 +107,7 @@ public class HogwartsTestUserController {
 
     @ApiOperation(value = "是否已经登录接口")
     @GetMapping("/isLogin")
-    public ResultDto isLogin(HttpServletRequest request) {
+    public ResultDto<TokenDto> isLogin(HttpServletRequest request) {
 
         String token = request.getHeader(UserConstants.LOGIN_TOKEN);
 

@@ -16,5 +16,7 @@ public class TokenDto {
 
     private Integer defaultJenkinsId;
 
+    private String token;
+
 
 }

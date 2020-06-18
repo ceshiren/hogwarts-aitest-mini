@@ -66,7 +66,7 @@ public class HogwartsTesReportController {
      * 根据任务类型获取任务统计信息 - 饼状图
      * @return
      */
-    @ApiOperation(value = "根据任务类型获取任务统计信息")
+    @ApiOperation(value = "根据任务类型获取任务统计信息 - 饼状图")
     @GetMapping("/taskByType")
     public ResultDto<TaskReportDto> update(HttpServletRequest request){
 
@@ -82,7 +82,7 @@ public class HogwartsTesReportController {
      * 根据任务状态获取任务统计信息 - 饼状图
      * @return
      */
-    @ApiOperation(value = "根据任务状态获取任务统计信息")
+    @ApiOperation(value = "根据任务状态获取任务统计信息 - 饼状图")
     @GetMapping("/taskByStatus")
     public ResultDto<TaskReportDto> getById(HttpServletRequest request){
 
@@ -101,7 +101,7 @@ public class HogwartsTesReportController {
      * @param end 按时间倒叙结束序号
      * @return
      */
-    @ApiOperation(value = "任务中用例的数量统计信息")
+    @ApiOperation(value = "任务中用例的数量统计信息 - 折线图")
     @GetMapping("/taskByCaseCount")
     public ResultDto<List<HogwartsTestTask>> delete(HttpServletRequest request
             , @RequestParam(value = "start",required = false) Integer start

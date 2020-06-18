@@ -113,6 +113,7 @@ public class HogwartsTestUserServiceImpl implements HogwartsTestUserService {
 		TokenDto tokenDto = new TokenDto();
 		tokenDto.setUserId(resultHogwartsTestUser.getId());
 		tokenDto.setUserName(userName);
+		tokenDto.setToken(tokenStr);
 		tokenDto.setDefaultJenkinsId(resultHogwartsTestUser.getDefaultJenkinsId());
 
 		tokenDb.addTokenDto(tokenStr, tokenDto);

@@ -93,7 +93,6 @@
             <version>2.1.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/tk.mybatis/mapper -->
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper</artifactId>

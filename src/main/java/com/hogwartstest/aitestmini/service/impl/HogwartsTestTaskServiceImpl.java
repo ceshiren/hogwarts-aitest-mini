@@ -162,10 +162,11 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
             return ResultDto.fail("未查到测试任务信息");
         }
 
-        hogwartsTestTask.setCreateTime(result.getCreateTime());
-        hogwartsTestTask.setUpdateTime(new Date());
+        result.setUpdateTime(new Date());
+        result.setName(hogwartsTestTask.getName());
+        result.setRemark(hogwartsTestTask.getRemark());
 
-        hogwartsTestTaskMapper.updateByPrimaryKey(hogwartsTestTask);
+        hogwartsTestTaskMapper.updateByPrimaryKey(result);
 
         return ResultDto.success("成功");
     }
@@ -335,13 +336,13 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
         if(Constants.STATUS_THREE.equals(result.getStatus())){
             return ResultDto.fail("测试任务已完成，无需修改");
         }
-
-        hogwartsTestTask.setCreateTime(result.getCreateTime());
-        hogwartsTestTask.setUpdateTime(new Date());
+        result.setUpdateTime(new Date());
 
         //仅状态为已完成时修改
         if(Constants.STATUS_THREE.equals(hogwartsTestTask.getStatus())){
-            hogwartsTestTaskMapper.updateByPrimaryKey(hogwartsTestTask);
+            result.setBuildUrl(hogwartsTestTask.getBuildUrl());
+            result.setStatus(Constants.STATUS_THREE);
+            hogwartsTestTaskMapper.updateByPrimaryKey(result);
         }
 
         return ResultDto.success("成功");

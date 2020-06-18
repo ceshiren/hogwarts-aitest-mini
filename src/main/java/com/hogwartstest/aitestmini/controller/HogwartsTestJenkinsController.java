@@ -66,7 +66,7 @@ public class HogwartsTestJenkinsController {
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         hogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
 
-        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.save(hogwartsTestJenkins);
+        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.save(tokenDto, hogwartsTestJenkins);
         return resultDto;
     }
 
@@ -103,7 +103,7 @@ public class HogwartsTestJenkinsController {
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         hogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
 
-        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.update(hogwartsTestJenkins);
+        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.update(tokenDto, hogwartsTestJenkins);
         return resultDto;
     }
 
@@ -145,7 +145,7 @@ public class HogwartsTestJenkinsController {
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
 
-        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.delete(jenkinsId, tokenDto.getUserId());
+        ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.delete(jenkinsId, tokenDto);
         return resultDto;
     }
 

@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -60,6 +61,12 @@ public class HogwartsTestTaskController {
 
         if(Objects.isNull(addHogwartsTestTaskDto.getName())){
             return ResultDto.fail("测试任务名称不能为空");
+        }
+
+        List<Integer> caseIdList = testTaskDto.getCaseIdList();
+
+        if(Objects.isNull(caseIdList) || caseIdList.size()==0){
+            return ResultDto.fail("测试用例不能为空");
         }
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));

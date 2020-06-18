@@ -2,6 +2,7 @@ package com.hogwartstest.aitestmini.service;
 
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
+import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
@@ -14,21 +15,21 @@ public interface HogwartsTestJenkinsService {
 	 * @param hogwartsTestJenkins
 	 * @return
 	 */
-	ResultDto<HogwartsTestJenkins> save(HogwartsTestJenkins hogwartsTestJenkins);
+	ResultDto<HogwartsTestJenkins> save(TokenDto tokenDto, HogwartsTestJenkins hogwartsTestJenkins);
 
 	/**
 	 *  删除Jenkins信息
 	 * @param id
 	 * @return
 	 */
-	ResultDto<HogwartsTestJenkins> delete(Integer jenkinsId,Integer createUserId);
+	ResultDto<HogwartsTestJenkins> delete(Integer jenkinsId,TokenDto tokenDto);
 
 	/**
 	 *  修改Jenkins信息
 	 * @param hogwartsTestJenkins
 	 * @return
 	 */
-	ResultDto<HogwartsTestJenkins> update(HogwartsTestJenkins hogwartsTestJenkins);
+	ResultDto<HogwartsTestJenkins> update(TokenDto tokenDto, HogwartsTestJenkins hogwartsTestJenkins);
 
 	/**
 	 *  根据id查询Jenkins信息

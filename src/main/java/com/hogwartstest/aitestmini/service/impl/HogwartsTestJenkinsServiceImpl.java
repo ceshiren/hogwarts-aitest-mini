@@ -1,9 +1,11 @@
 package com.hogwartstest.aitestmini.service.impl;
 
+import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.dao.HogwartsTestJenkinsMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
+import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
@@ -28,6 +30,9 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	@Autowired
 	private HogwartsTestUserMapper hogwartsTestUserMapper;
 
+	@Autowired
+	private TokenDb tokenDb;
+
 
 	/**
 	 * 新增Jenkins信息
@@ -37,7 +42,7 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ResultDto<HogwartsTestJenkins> save(HogwartsTestJenkins hogwartsTestJenkins) {
+	public ResultDto<HogwartsTestJenkins> save(TokenDto tokenDto, HogwartsTestJenkins hogwartsTestJenkins) {
 
 		hogwartsTestJenkins.setCreateTime(new Date());
 		hogwartsTestJenkins.setUpdateTime(new Date());
@@ -51,6 +56,10 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
 			hogwartsTestUser.setId(createUserId);
 			hogwartsTestUser.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+
+			//更新token信息中的默认JenkinsId
+			tokenDto.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+			tokenDb.addTokenDto(tokenDto.getToken(), tokenDto);
 
 			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
 
@@ -67,12 +76,12 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ResultDto<HogwartsTestJenkins> delete(Integer jenkinsId,Integer createUserId) {
+	public ResultDto<HogwartsTestJenkins> delete(Integer jenkinsId,TokenDto tokenDto) {
 
 		HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
 
 		queryHogwartsTestJenkins.setId(jenkinsId);
-		queryHogwartsTestJenkins.setCreateUserId(createUserId);
+		queryHogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
 
 		HogwartsTestJenkins result = hogwartsTestJenkinsMapper.selectOne(queryHogwartsTestJenkins);
 
@@ -82,7 +91,7 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 		}
 
 		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
-		queryHogwartsTestUser.setId(createUserId);
+		queryHogwartsTestUser.setId(tokenDto.getUserId());
 
 		HogwartsTestUser reslutHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
 
@@ -91,8 +100,13 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 		if(Objects.nonNull(defaultJenkinsId) && defaultJenkinsId.equals(jenkinsId)){
 
 			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
-			hogwartsTestUser.setId(createUserId);
+			hogwartsTestUser.setId(tokenDto.getUserId());
 			hogwartsTestUser.setDefaultJenkinsId(null);
+
+			//更新token信息中的默认JenkinsId
+			tokenDto.setDefaultJenkinsId(null);
+			tokenDb.addTokenDto(tokenDto.getToken(), tokenDto);
+
 			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
 
 		}
@@ -110,7 +124,7 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ResultDto<HogwartsTestJenkins> update(HogwartsTestJenkins hogwartsTestJenkins) {
+	public ResultDto<HogwartsTestJenkins> update(TokenDto tokenDto, HogwartsTestJenkins hogwartsTestJenkins) {
 
 		HogwartsTestJenkins queryHogwartsTestJenkins = new HogwartsTestJenkins();
 
@@ -137,6 +151,10 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 			HogwartsTestUser hogwartsTestUser = new HogwartsTestUser();
 			hogwartsTestUser.setId(createUserId);
 			hogwartsTestUser.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+
+			//更新token信息中的默认JenkinsId
+			tokenDto.setDefaultJenkinsId(hogwartsTestJenkins.getId());
+			tokenDb.addTokenDto(tokenDto.getToken(), tokenDto);
 
 			hogwartsTestUserMapper.updateByPrimaryKeySelective(hogwartsTestUser);
 

@@ -33,6 +33,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         //如果请求中含有token
         if(StringUtils.isEmpty(tokenStr)){
+            response.setStatus(401);
             ServiceException.throwEx("客户端未传token");
         }
 
@@ -43,6 +44,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             //这个方法返回false表示忽略当前请求，如果一个用户调用了需要登陆才能使用的接口，如果他没有登陆这里会直接忽略掉
             //当然你可以利用response给用户返回一些提示信息，告诉他没登陆
             //此处直接抛出异常
+            response.setStatus(401);
             ServiceException.throwEx("用户未登录");
             return false;
         }else {

@@ -16,12 +16,6 @@ public class UpdateHogwartsTestTaskStatusDto extends BaseEntityNew {
     private Integer taskId;
 
     /**
-     * ID
-     */
-    @ApiModelProperty(value="Jenkins主键",required=true)
-    private Integer jenkinsId;
-
-    /**
      *
      */
     @ApiModelProperty(value="构建地址",required=true)
