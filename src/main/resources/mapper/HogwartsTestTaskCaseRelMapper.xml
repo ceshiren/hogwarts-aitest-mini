@@ -31,7 +31,7 @@
     <if test="params.caseSign != null and params.caseSign != '' ">
       and htc.case_sign like concat('%', #{params.caseSign}, '%')
     </if>
-    order by htc.update_time
+    order by htc.update_time desc
     <if test="pageNum != null and pageSize != null ">
       limit #{pageNum}, #{pageSize}
     </if>

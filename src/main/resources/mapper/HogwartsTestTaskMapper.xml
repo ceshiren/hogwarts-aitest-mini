@@ -34,7 +34,7 @@
     <if test="params.name != null and params.name != '' ">
       and htt.name = #{params.name}
     </if>
-    order by htt.update_time
+    order by htt.update_time desc
     limit #{pageNum}, #{pageSize}
   </select>
 

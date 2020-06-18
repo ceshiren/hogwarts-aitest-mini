@@ -38,7 +38,7 @@
       and htc.case_sign like concat('%', #{params.caseSign}, '%')
     </if>
     and htc.del_flag = 1
-    order by htc.update_time
+    order by htc.update_time desc
     limit #{pageNum}, #{pageSize}
   </select>
 
