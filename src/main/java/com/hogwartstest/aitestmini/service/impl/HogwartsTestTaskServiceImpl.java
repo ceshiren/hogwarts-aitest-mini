@@ -397,9 +397,6 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         }
 
-        //本行命令执行失败，继续运行下面的命令行
-        testCommand.append(" || true");
-
         testCommand.append("\n");
     }
 
