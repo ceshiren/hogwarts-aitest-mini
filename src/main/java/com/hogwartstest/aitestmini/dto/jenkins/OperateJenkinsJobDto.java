@@ -4,7 +4,6 @@ import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 /**

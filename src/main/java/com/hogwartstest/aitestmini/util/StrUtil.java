@@ -2,7 +2,6 @@ package com.hogwartstest.aitestmini.util;
 
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

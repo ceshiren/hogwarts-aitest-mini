@@ -16,55 +16,14 @@ public class ResultDto<T> implements Serializable {
 
     private static final long serialVersionUID = -7472879865481412372L;
 
-    /**
-     * 结果状态码 1 成功 0 失败
-     */
-
-    @ApiModelProperty(value="返回结果码", example="1",allowableValues = "1,0")
+    @ApiModelProperty(value="返回结果码 1 成功 0 失败", required = true, example="1",allowableValues = "1,0")
     private Integer resultCode;
 
-    /**
-     * 可为空,由业务接口设置
-     */
     @ApiModelProperty(value="提示信息", example="成功",allowableValues = "成功,失败")
     private String message = "";
 
-    /**
-     * 响应结果数据,对象/array类型,对应后端的 Bean/List
-     */
-
-    @ApiModelProperty(value="具体响应数据")
+    @ApiModelProperty(value="响应结果数据")
     private T data = null;
-
-
-
-    private Integer pageSize;       //每页多少条
-    private Integer pageIndex;    //当前页面
-    private Integer totalSize;      //总条数
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public Integer getPageIndex() {
-        return pageIndex;
-    }
-
-    public void setPageIndex(Integer pageIndex) {
-        this.pageIndex = pageIndex;
-    }
-
-    public Integer getTotalSize() {
-        return totalSize;
-    }
-
-    public void setTotalSize(Integer totalSize) {
-        this.totalSize = totalSize;
-    }
 
     public Integer getResultCode() {
         return resultCode;

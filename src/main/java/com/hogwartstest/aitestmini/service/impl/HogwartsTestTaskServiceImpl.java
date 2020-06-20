@@ -227,6 +227,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultDto startTask(TokenDto tokenDto, RequestInfoDto requestInfoDto, HogwartsTestTask hogwartsTestTask) throws IOException {
         log.info("=====开始测试-Service请求入参====："+ JSONObject.toJSONString(requestInfoDto)+"+++++"+JSONObject.toJSONString(hogwartsTestTask));
         if(Objects.isNull(hogwartsTestTask)){
@@ -272,8 +273,9 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
             return ResultDto.fail("任务的测试命令不能为空");
         }
 
-
+        //更新任务状态
         resultHogwartsTestTask.setStatus(Constants.STATUS_TWO);
+        hogwartsTestTaskMapper.updateByPrimaryKeySelective(resultHogwartsTestTask);
 
         StringBuilder testCommand = new StringBuilder();
 

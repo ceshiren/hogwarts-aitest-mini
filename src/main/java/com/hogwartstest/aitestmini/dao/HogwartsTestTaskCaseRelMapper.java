@@ -1,7 +1,6 @@
 package com.hogwartstest.aitestmini.dao;
 
 import com.hogwartstest.aitestmini.common.MySqlExtensionMapper;
-import com.hogwartstest.aitestmini.dto.task.QueryHogwartsTestTaskListDto;
 import com.hogwartstest.aitestmini.dto.testcase.HogwartsTestTaskCaseRelDetailDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestTaskCaseRelListDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestTaskCaseRel;

@@ -1,29 +1,19 @@
 package com.hogwartstest.aitestmini.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
-import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
 import com.hogwartstest.aitestmini.dto.testcase.HogwartsTestTaskCaseRelDetailDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestTaskCaseRelListDto;
-import com.hogwartstest.aitestmini.dto.user.AddUserDto;
-import com.hogwartstest.aitestmini.dto.user.LoginUserDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;
-import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
-import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestTaskCaseRelService;
-import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
-import com.hogwartstest.aitestmini.util.CopyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;

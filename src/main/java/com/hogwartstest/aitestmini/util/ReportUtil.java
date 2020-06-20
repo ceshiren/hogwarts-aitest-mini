@@ -1,14 +1,8 @@
 package com.hogwartstest.aitestmini.util;
 
-import com.alibaba.fastjson.JSONObject;
-import com.hogwartstest.aitestmini.constants.Constants;
-import com.hogwartstest.aitestmini.dto.RequestInfoDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
-import com.hogwartstest.aitestmini.entity.HogwartsTestTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-
-import java.util.Objects;
 
 /**
  * Jenkins工具类

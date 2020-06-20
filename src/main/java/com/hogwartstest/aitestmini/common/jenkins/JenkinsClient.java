@@ -13,21 +13,15 @@ import com.hogwartstest.aitestmini.util.FileUtil;
 import com.hogwartstest.aitestmini.util.JenkinsUtil;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
-import com.offbytwo.jenkins.client.JenkinsHttpConnection;
-import com.offbytwo.jenkins.helper.JenkinsVersion;
-import com.offbytwo.jenkins.model.Queue;
 import com.offbytwo.jenkins.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.*;
 
 @Component
