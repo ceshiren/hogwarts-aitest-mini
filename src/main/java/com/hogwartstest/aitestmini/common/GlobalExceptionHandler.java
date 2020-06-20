@@ -2,11 +2,9 @@ package com.hogwartstest.aitestmini.common;
 
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * 全局异常捕获类，主要分业务异常和其他异常两种
@@ -32,7 +30,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Throwable.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResultDto exception(Throwable throwable) {
         log.error("服务暂不可用", throwable);
         return resultFormat(throwable);
