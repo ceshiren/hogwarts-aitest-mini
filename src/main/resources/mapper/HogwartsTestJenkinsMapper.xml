@@ -34,7 +34,7 @@
     <if test="params.name != null and params.name != '' ">
       and htj.name = #{params.name}
     </if>
-    order by htj.update_time desc
+    order by htj.id desc
     limit #{pageNum}, #{pageSize}
   </select>
 

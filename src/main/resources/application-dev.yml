@@ -40,3 +40,7 @@ mybatis:
   type-aliases-package: com.hogwartstest.aitestmini.entity
   configuration:
     mapUnderscoreToCamelCase: true
+
+logging:
+  level:
+    com.hogwartstest.aitestmini.dao: debug #打印sql
