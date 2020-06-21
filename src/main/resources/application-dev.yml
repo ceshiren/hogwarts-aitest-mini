@@ -10,30 +10,10 @@ spring:
   application:
     name: aitest
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://39.102.48.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-      username: aitest_mini
-      password: hogwarts_test_mini
-      initial-size: 10
-      max-active: 100
-      min-idle: 10
-      max-wait: 60000
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      max-evictable-idle-time-millis: 60000
-      validation-query: SELECT 1 FROM DUAL
-      test-on-borrow: false
-      test-on-return: false
-      test-while-idle: true
-      #filters: #配置多个英文逗号分隔(统计，sql注入，log4j过滤)
-      filters: stat,wall
-      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-      stat-view-servlet:
-        allow: 47.105.117.0
+    url: jdbc:mysql://39.122.47.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: aitest_mini
+    password: hogwarts_test_mini
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
