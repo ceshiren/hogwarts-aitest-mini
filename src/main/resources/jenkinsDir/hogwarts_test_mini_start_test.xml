@@ -6,8 +6,14 @@
         <hudson.model.ParametersDefinitionProperty>
             <parameterDefinitions>
                 <hudson.model.StringParameterDefinition>
-                    <name>createCaseJobName</name>
-                    <description>创建测试用例的job名称</description>
+                    <name>aitestBaseUrl</name>
+                    <description>测试平台baseUrl</description>
+                    <defaultValue>无/</defaultValue>
+                    <trim>true</trim>
+                </hudson.model.StringParameterDefinition>
+                <hudson.model.StringParameterDefinition>
+                    <name>token</name>
+                    <description>测试平台token</description>
                     <defaultValue>无/</defaultValue>
                     <trim>true</trim>
                 </hudson.model.StringParameterDefinition>
@@ -48,7 +54,6 @@
                 rsync -a /home/hogwarts/jenkins_workspace/workspace/${createCaseJobName}/. .
                 pwd
                 . ~/.bash_profile
-                mvn clean || true
                 ${testCommand} || true
                 eval "${updateStatusData}"
             </command>

@@ -4,17 +4,16 @@ import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
-import com.hogwartstest.aitestmini.dto.testcase.SaveTestCaseListDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 
 public interface HogwartsTestCaseService {
 
 	/**
-	 *  批量新增测试用例
-	 * @param saveTestCaseListDto
+	 *  新增测试用例
+	 * @param hogwartsTestCase
 	 * @return
 	 */
-	ResultDto saveList(SaveTestCaseListDto saveTestCaseListDto);
+	ResultDto save(HogwartsTestCase hogwartsTestCase);
 
 	/**
 	 *  删除测试用例信息
@@ -45,5 +44,13 @@ public interface HogwartsTestCaseService {
 	 * @return
 	 */
 	ResultDto<PageTableResponse<HogwartsTestCase>> list(PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest);
+
+	/**
+	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+	 * @param createUserId
+	 * @param caseId
+	 * @return
+	 */
+	String getCaseDataById(Integer createUserId, Integer caseId);
 
 }

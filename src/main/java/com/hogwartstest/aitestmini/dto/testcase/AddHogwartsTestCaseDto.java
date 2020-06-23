@@ -10,28 +10,16 @@ import lombok.Data;
 public class AddHogwartsTestCaseDto extends BaseEntityNew {
 
     /**
-     * 包名
+     * 测试用例数据
      */
-    @ApiModelProperty(value="测试用例包名",required=true)
-    private String packageName;
+    @ApiModelProperty(value="测试用例数据", notes = "文件类型case时不传值", required=true)
+    private String caseData;
 
     /**
-     * 类名
+     * 用例名称
      */
-    @ApiModelProperty(value="测试用例类名",required=true)
-    private String className;
-
-    /**
-     * 方法名
-     */
-    @ApiModelProperty(value="测试用例方法名",required=true)
-    private String methodName;
-
-    /**
-     * 用例标识
-     */
-    @ApiModelProperty(value="测试用例标识",required=true)
-    private String caseSign;
+    @ApiModelProperty(value="测试用例名称",required=true)
+    private String caseName;
 
     /**
      * 备注

@@ -19,9 +19,6 @@ public class OperateJenkinsJobDto {
 
     private HogwartsTestJenkins hogwartsTestJenkins;
 
-    //Job类型
-    private Integer jobType;
-
     //构建参数
     private Map<String, String> params;
 

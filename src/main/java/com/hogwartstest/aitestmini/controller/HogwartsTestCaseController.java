@@ -7,7 +7,6 @@ import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
-import com.hogwartstest.aitestmini.dto.testcase.SaveTestCaseListDto;
 import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;
@@ -17,12 +16,15 @@ import com.hogwartstest.aitestmini.util.CopyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 /**
@@ -43,32 +45,74 @@ public class HogwartsTestCaseController {
 
     /**
      *
-     * @param saveTestCaseListDto
+     * @param addHogwartsTestCaseDto
      * @return
      */
     @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
-    @PostMapping("list")
-    public ResultDto saveList(HttpServletRequest request, @RequestBody SaveTestCaseListDto saveTestCaseListDto){
+    @PostMapping("text")
+    public ResultDto saveText(HttpServletRequest request, @RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
 
-        log.info("=====批量新增测试用例-请求入参====："+ JSONObject.toJSONString(saveTestCaseListDto));
+        log.info("=====新增文本测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
 
-        if(Objects.isNull(saveTestCaseListDto)){
-            return ResultDto.success("请求参数不能为空");
+        if(Objects.isNull(addHogwartsTestCaseDto)){
+            return ResultDto.fail("请求参数不能为空");
         }
 
-        List<AddHogwartsTestCaseDto> testCaseList = saveTestCaseListDto.getTestCaseList();
-
-        if(Objects.isNull(testCaseList) || testCaseList.size()==0){
-            return ResultDto.success("测试用例列表不能为空");
+        if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseData())){
+            return ResultDto.fail("测试用例数据不能为空");
+        }
+        if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseName())){
+            return ResultDto.fail("测试用例名称不能为空");
         }
 
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+
+        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        saveTestCaseListDto.setCreateUserId(tokenDto.getUserId());
+        hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
 
-
-        ResultDto resultDto = hogwartsTestCaseService.saveList(saveTestCaseListDto);
+        ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
         return resultDto;
     }
+
+    /**
+     *
+     * @param addHogwartsTestCaseDto
+     * @return
+     */
+    @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
+    @PostMapping("file")
+    public ResultDto saveFile(HttpServletRequest request, @RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
+
+        log.info("=====新增文件测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
+
+        if(Objects.isNull(addHogwartsTestCaseDto)){
+            return ResultDto.fail("请求参数不能为空");
+        }
+
+        if(Objects.isNull(caseFile)){
+            return ResultDto.fail("测试用例文件不能为空");
+        }
+
+        if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseName())){
+            return ResultDto.fail("测试用例名称不能为空");
+        }
+
+        InputStream inputStream =  caseFile.getInputStream();
+        String caseData = IOUtils.toString(inputStream,"UTF-8");
+        inputStream.close();
+
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+        hogwartsTestCase.setCaseData(caseData);
+
+        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
+        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
+        hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
+
+        ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
+        return resultDto;
+    }
+
 
     /**
      *
@@ -86,14 +130,14 @@ public class HogwartsTestCaseController {
         }
 
         Integer caseId = updateHogwartsTestCaseDto.getId();
-        String caseSign = updateHogwartsTestCaseDto.getCaseSign();
+        String caseName = updateHogwartsTestCaseDto.getCaseName();
 
         if(Objects.isNull(caseId)){
             return ResultDto.success("测试用例id不能为空");
         }
 
-        if(StringUtils.isEmpty(caseSign)){
-            return ResultDto.success("测试用例标识不能为空");
+        if(StringUtils.isEmpty(caseName)){
+            return ResultDto.success("测试用例名称不能为空");
         }
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
@@ -174,6 +218,23 @@ public class HogwartsTestCaseController {
 
         ResultDto<PageTableResponse<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list(pageTableRequest);
         return responseResultDto;
+    }
+
+    /**
+     * 根据caseId查询case原始数据
+     *  地址不要随便改 ${caseDataUrl}/testcase/data/  有引用
+     * @param caseId 测试用例id
+     * @return
+     */
+    @ApiOperation(value = "根据测试用例id查询")
+    @GetMapping("data/{caseId}")
+    public String getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) {
+        log.info("=====根据用户id和caseId查询case原始数据-请求入参====："+ caseId);
+
+        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
+        String caseData = hogwartsTestCaseService.getCaseDataById(tokenDto.getUserId(), caseId);
+        log.info("=====根据用户id和caseId查询case原始数据-请求出参====："+ caseData);
+        return caseData;
     }
 
 

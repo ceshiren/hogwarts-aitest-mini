@@ -16,28 +16,16 @@ public class HogwartsTestCase extends BaseEntityNew {
     private Integer id;
 
     /**
-     * 包名
+     * 测试数据
      */
-    @Column(name = "package_name")
-    private String packageName;
+    @Column(name = "case_data")
+    private String caseData;
 
     /**
-     * 类名
+     * 用例名称
      */
-    @Column(name = "class_name")
-    private String className;
-
-    /**
-     * 方法名
-     */
-    @Column(name = "method_name")
-    private String methodName;
-
-    /**
-     * 用例标识
-     */
-    @Column(name = "case_sign")
-    private String caseSign;
+    @Column(name = "case_name")
+    private String caseName;
 
     /**
      * 备注

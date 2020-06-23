@@ -116,9 +116,6 @@ public class HogwartsTestReportServiceImpl implements HogwartsTestReportService 
 			if(Constants.TASK_TYPE_TWO.equals(taskKey)){
 				taskDataDto.setDesc("一键执行测试的任务");
 			}
-			if(Constants.TASK_TYPE_90.equals(taskKey)){
-				taskDataDto.setDesc("生成用例任务");
-			}
 
 			taskSum = taskSum + taskDataDto.getTaskCount();
 

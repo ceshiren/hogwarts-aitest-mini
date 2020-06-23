@@ -29,13 +29,4 @@ public interface HogwartsTestUserService {
 	 */
 	ResultDto<HogwartsTestUser> changePassword(String username, String oldPassword, String newPassword);
 
-
-	/**
-	 *  生成测试用例
-	 * @param tokenDto
-	 * @param requestInfoDto
-	 * @return
-	 */
-	ResultDto<HogwartsTestUser> parse(TokenDto tokenDto, RequestInfoDto requestInfoDto) throws IOException;
-
 }

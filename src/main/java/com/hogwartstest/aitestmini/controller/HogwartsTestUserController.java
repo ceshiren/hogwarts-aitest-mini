@@ -1,10 +1,8 @@
 package com.hogwartstest.aitestmini.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
-import com.hogwartstest.aitestmini.dto.RequestInfoDto;
 import com.hogwartstest.aitestmini.dto.user.AddUserDto;
 import com.hogwartstest.aitestmini.dto.user.LoginUserDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
@@ -12,7 +10,6 @@ import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
-import com.hogwartstest.aitestmini.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -114,26 +111,6 @@ public class HogwartsTestUserController {
         TokenDto tokenDto = tokenDb.getTokenDto(token);
 
         return ResultDto.success("成功",tokenDto);
-    }
-
-    @ApiOperation(value = "生成用例接口")
-    @PostMapping("/createCase")
-    public ResultDto parse(HttpServletRequest request) throws Exception {
-
-        String token = request.getHeader(UserConstants.LOGIN_TOKEN);
-        TokenDto tokenDto = tokenDb.getTokenDto(token);
-        log.info("token== "+JSONObject.toJSONString(tokenDto));
-
-        String url = request.getRequestURL().toString();
-        log.info("请求地址== "+url);
-        url = StrUtil.getHostAndPort(request.getRequestURL().toString());
-
-        RequestInfoDto requestInfoDto = new RequestInfoDto();
-        requestInfoDto.setBaseUrl(url);
-        requestInfoDto.setRequestUrl(url+"/testCase/list");
-        requestInfoDto.setToken(token);
-
-        return hogwartsTestUserService.parse(tokenDto, requestInfoDto);
     }
 
 }

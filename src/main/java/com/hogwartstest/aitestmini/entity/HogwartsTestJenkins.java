@@ -43,22 +43,22 @@ public class HogwartsTestJenkins extends BaseEntityNew {
     private String password;
 
     /**
-     * git地址
-     */
-    @Column(name = "git_url")
-    private String gitUrl;
-
-    /**
-     * git分支
-     */
-    @Column(name = "git_branch")
-    private String gitBranch;
-
-    /**
      * 创建人id
      */
     @Column(name = "create_user_id")
     private Integer createUserId;
+
+    /**
+     * 命令运行的测试用例类型  1 文本 2 文件
+     */
+    @Column(name = "command_run_case_type")
+    private Integer commandRunCaseType;
+
+    /**
+     * 测试用例后缀名 如果case为文件时，此处必填
+     */
+    @Column(name = "command_run_case_suffix")
+    private String commandRunCasSuffix;
 
     /**
      * 备注

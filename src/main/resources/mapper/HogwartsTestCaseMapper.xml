@@ -6,10 +6,8 @@
       WARNING - @mbg.generated
     -->
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="package_name" property="packageName" jdbcType="VARCHAR" />
-    <result column="class_name" property="className" jdbcType="VARCHAR" />
-    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
-    <result column="case_sign" property="caseSign" jdbcType="VARCHAR" />
+    <result column="case_data" property="caseData" jdbcType="VARCHAR" />
+    <result column="case_name" property="caseName" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="del_flag" property="delFlag" jdbcType="TINYINT" />
     <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
@@ -17,15 +15,11 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
 
-  <update id="updateByCreateUserId">
-    update hogwarts_test_case t set t.del_flag = 0,t.update_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where t.create_user_id = #{createUserId}
-  </update>
-
   <select id="count" resultType="int">
     select count(1) from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
 
-    <if test="params.caseSign != null and params.caseSign != '' ">
-      and htc.case_sign like concat('%', #{params.caseSign}, '%')
+    <if test="params.caseName != null and params.caseName != '' ">
+      and htc.case_name like concat('%', #{params.caseName}, '%')
     </if>
     and htc.del_flag = 1
 
@@ -34,8 +28,8 @@
   <select id="list" resultType="HogwartsTestCase">
     select * from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
 
-    <if test="params.caseSign != null and params.caseSign != '' ">
-      and htc.case_sign like concat('%', #{params.caseSign}, '%')
+    <if test="params.caseName != null and params.caseName != '' ">
+      and htc.case_name like concat('%', #{params.caseName}, '%')
     </if>
     and htc.del_flag = 1
     order by htc.id desc

@@ -66,6 +66,13 @@ public class HogwartsTestJenkinsController {
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         hogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
 
+        String commandRunCasSuffix = addHogwartsTestJenkinsDto.getCommandRunCasSuffix();
+        //过滤待.的后缀，如.yaml改为yaml
+        if(!StringUtils.isEmpty(commandRunCasSuffix)){
+            hogwartsTestJenkins.setCommandRunCasSuffix(commandRunCasSuffix.replace(".",""));
+        }
+
+
         ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.save(tokenDto, hogwartsTestJenkins);
         return resultDto;
     }
@@ -102,6 +109,12 @@ public class HogwartsTestJenkinsController {
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         hogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
+
+        String commandRunCasSuffix = updateHogwartsTestJenkinsDto.getCommandRunCasSuffix();
+        //过滤待.的后缀，如.yaml改为yaml
+        if(!StringUtils.isEmpty(commandRunCasSuffix)){
+            hogwartsTestJenkins.setCommandRunCasSuffix(commandRunCasSuffix.replace(".",""));
+        }
 
         ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.update(tokenDto, hogwartsTestJenkins);
         return resultDto;

@@ -1,5 +1,6 @@
 package com.hogwartstest.aitestmini.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.dao.HogwartsTestCaseMapper;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
@@ -7,13 +8,13 @@ import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
-import com.hogwartstest.aitestmini.dto.testcase.SaveTestCaseListDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,42 +29,20 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     private HogwartsTestCaseMapper hogwartsTestCaseMapper;
 
     /**
-     * saveTestCaseListDto
      *
-     * @param saveTestCaseListDto
+     * @param hogwartsTestCase
      * @return
      */
     @Override
-    public ResultDto<HogwartsTestCase> saveList(SaveTestCaseListDto saveTestCaseListDto) {
+    public ResultDto<HogwartsTestCase> save(HogwartsTestCase hogwartsTestCase) {
 
-        Integer createUserId = saveTestCaseListDto.getCreateUserId();
-        List<AddHogwartsTestCaseDto> testCaseList = saveTestCaseListDto.getTestCaseList();
 
-        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
+        hogwartsTestCase.setCreateTime(new Date());
+        hogwartsTestCase.setUpdateTime(new Date());
+        hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
 
-        queryHogwartsTestCase.setCreateUserId(createUserId);
-        queryHogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
-
-        //思考？为什么不直接删除
-        hogwartsTestCaseMapper.updateByCreateUserId(createUserId);
-
-        List<HogwartsTestCase> hogwartsTestCaseList = new ArrayList<>();
-
-        for (AddHogwartsTestCaseDto addHogwartsTestCaseDto : testCaseList) {
-
-            HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
-            CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
-            hogwartsTestCase.setCreateTime(new Date());
-            hogwartsTestCase.setUpdateTime(new Date());
-            hogwartsTestCase.setCreateUserId(createUserId);
-            hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
-
-            hogwartsTestCaseList.add(hogwartsTestCase);
-
-        }
-
-        hogwartsTestCaseMapper.insertList(hogwartsTestCaseList);
-        return ResultDto.success("成功");
+        hogwartsTestCaseMapper.insertUseGeneratedKeys(hogwartsTestCase);
+        return ResultDto.success("成功", hogwartsTestCase);
     }
 
     /**
@@ -173,6 +152,35 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         hogwartsTestJenkinsPageTableResponse.setData(hogwartsTestJenkinsList);
 
         return ResultDto.success("成功", hogwartsTestJenkinsPageTableResponse);
+    }
+
+    /**
+     * 根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+     *
+     * @param createUserId
+     * @param caseId
+     * @return
+     */
+    @Override
+    public String getCaseDataById(Integer createUserId, Integer caseId) {
+        if(Objects.isNull(caseId)){
+            return "用例id为空";
+        }
+
+        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
+        queryHogwartsTestCase.setCreateUserId(createUserId);
+        queryHogwartsTestCase.setId(caseId);
+        log.info("=====根据测试用例id查询case原始数据-查库入参====："+ JSONObject.toJSONString(queryHogwartsTestCase));
+        HogwartsTestCase resultHogwartsTestCase = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
+
+        if(Objects.isNull(resultHogwartsTestCase)){
+            return "用例数据未查到";
+        }
+        if(StringUtils.isEmpty(resultHogwartsTestCase.getCaseData())){
+            return "用例原始数据未查到";
+        }
+
+        return resultHogwartsTestCase.getCaseData();
     }
 
 }

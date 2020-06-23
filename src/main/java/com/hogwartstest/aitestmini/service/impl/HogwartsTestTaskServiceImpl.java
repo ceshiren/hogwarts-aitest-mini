@@ -75,9 +75,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         List<HogwartsTestCase> hogwartsTestCaseList = hogwartsTestCaseMapper.selectByIds(StrUtil.list2IdsStr(caseIdList));
 
-        String runCommand = result.getTestCommand();
-
-        makeMvnTest(testCommand, runCommand, hogwartsTestCaseList);
+        makeTestCommand(testCommand, result, hogwartsTestCaseList);
 
         HogwartsTestTask hogwartsTestTask = new HogwartsTestTask();
 
@@ -289,7 +287,8 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
         //构建参数组装
         Map<String, String> params = new HashMap<>();
 
-        params.put("createCaseJobName",JenkinsUtil.getCreateCaseJobName(resultHogwartsTestTask.getCreateUserId()));
+        params.put("aitestBaseUrl",requestInfoDto.getBaseUrl());
+        params.put("token",requestInfoDto.getToken());
         params.put("testCommand",testCommand.toString());
         params.put("updateStatusData",updateStatusUrl.toString());
 
@@ -299,7 +298,6 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         OperateJenkinsJobDto operateJenkinsJobDto = new OperateJenkinsJobDto();
 
-        operateJenkinsJobDto.setJobType(Constants.JOB_TYPE_TWO);
         operateJenkinsJobDto.setParams(params);
         operateJenkinsJobDto.setTokenDto(tokenDto);
         operateJenkinsJobDto.setHogwartsTestJenkins(resultHogwartsTestJenkins);
@@ -355,49 +353,100 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
      * @param testCommand
      * @param testCaseList
      */
-    private void makeMvnTest(StringBuilder testCommand, String runCommand, List<HogwartsTestCase> testCaseList) {
+    private void makeTestCommand(StringBuilder testCommand, HogwartsTestJenkins hogwartsTestJenkins, List<HogwartsTestCase> testCaseList) {
+
+        //打印测试目录
+        testCommand.append("pwd");
+        testCommand.append("\n");
+
+        if(Objects.isNull(hogwartsTestJenkins)){
+            throw new ServiceException("组装测试命令时，Jenkins信息为空");
+        }
+        if(Objects.isNull(testCaseList) || testCaseList.size()==0){
+            throw new ServiceException("组装测试命令时，测试用例列表信息为空");
+        }
+
+        String runCommand = hogwartsTestJenkins.getTestCommand();
+
+        Integer commandRunCaseType = hogwartsTestJenkins.getCommandRunCaseType();
+        String systemTestCommand = hogwartsTestJenkins.getTestCommand();
+
+        if(StringUtils.isEmpty(systemTestCommand)){
+            throw new ServiceException("组装测试命令时，运行的测试命令信息为空");
+        }
+
+        //默认文本类型
+        if(Objects.isNull(commandRunCaseType)){
+            commandRunCaseType = 1;
+        }
+
+        //文本类型
+        if(commandRunCaseType==1){
+            for (HogwartsTestCase hogwartsTestCase :testCaseList) {
+                //拼装命令前缀
+                testCommand.append(systemTestCommand).append(" ");
+                //拼装测试数据
+                testCommand.append(hogwartsTestCase.getCaseData())
+                .append("\n");
+            }
+        }
+        //文件类型
+        if(commandRunCaseType==2){
+
+            String commandRunCasSuffix = hogwartsTestJenkins.getCommandRunCasSuffix();
+
+            if(StringUtils.isEmpty(commandRunCasSuffix)){
+                throw new ServiceException("组装测试命令且case为文件时，测试用例后缀名不能为空");
+            }
+
+            for (HogwartsTestCase hogwartsTestCase :testCaseList) {
+
+                //拼装下载文件的curl命令
+                makeCurlCommand(testCommand, hogwartsTestCase);
+                //拼装命令前缀
+                testCommand.append(systemTestCommand).append(" ");
+                //平台测试用例名称
+                testCommand.append(hogwartsTestCase.getCaseName())
+                        //拼装.分隔符
+                        .append(".")
+                        //拼装case文件后缀
+                        .append(commandRunCasSuffix)
+                        .append("\n");
+            }
+        }
+
+
 
         log.info("testCommand.toString()== "+testCommand.toString() + "  runCommand== " + runCommand);
 
-        //-Dtest=空格很重要，不然命令会失效
-        testCommand.append(runCommand + " -Dtest=");
-        //后面具体按类型细分进行不同的拼装
-        int testCaseListSize = testCaseList.size();
-        //后面具体按类型细分进行不同的拼装
-        for (int i = 0; i < testCaseListSize; i++) {
-            HogwartsTestCase hogwartsTestCase = testCaseList.get(i);
 
-            if(Objects.isNull(hogwartsTestCase)){
-                continue;
-            }
+        testCommand.append("\n");
+    }
 
-            String packageName = hogwartsTestCase.getPackageName();
-            String className = hogwartsTestCase.getClassName();
+    /**
+     *  拼装下载文件的curl命令
+     * @param testCommand
+     * @param hogwartsTestCase
+     */
+    private void makeCurlCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase) {
 
-            //测试用例类型为包类型时，才添加包名，含有类名时不需要添加包名
-            if(StringUtils.isEmpty(className)&&!StringUtils.isEmpty(packageName)){
-                testCommand.append(packageName);
-            }
+        //通过curl命令获取测试数据并保存为文件
+        testCommand.append("curl ")
+                .append("-o ");
 
-            if(!StringUtils.isEmpty(className)){
-                testCommand.append(className);
-            }
-            String methodName = hogwartsTestCase.getMethodName();
-            //先拼装类名
-            //如果方法名不为空，则拼装方法名
-            if(!StringUtils.isEmpty(methodName)){
-                methodName = methodName
-                        .replace("(","")
-                        .replace(")","");
+        String caseName = hogwartsTestCase.getCaseName();
 
-                testCommand.append("#").append(methodName);
-            }
-            //只有不是最后一个测试用例，就追加逗号
-            if(i!=testCaseListSize-1){
-                testCommand.append(",");
-            }
-
+        if(StringUtils.isEmpty(caseName)){
+            caseName = "测试用例无测试名称";
         }
+
+        testCommand.append(caseName)
+                .append(" ${aitestBaseUrl}/testCase/data/")
+                .append(hogwartsTestCase.getId())
+                .append(" -H \"token: ${token}\" ");
+
+        //本行命令执行失败，继续运行下面的命令行
+        testCommand.append(" || true");
 
         testCommand.append("\n");
     }

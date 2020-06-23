@@ -21,16 +21,6 @@ public class JenkinsUtil {
     }
 
     /**
-     * 获取生成测试用例的Job名称
-     * @return
-     */
-
-    public static String getCreateCaseJobName(Integer createUserId){
-        String jobName = "hogwarts_test_mini_auto_create_"+createUserId;
-        return jobName;
-    }
-
-    /**
      * 获取执行测试的Job名称
      * @return
      */

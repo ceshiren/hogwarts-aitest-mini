@@ -15,40 +15,21 @@ public class UpdateHogwartsTestCaseDto extends BaseEntityNew {
     private Integer id;
 
     /**
-     * 包名
+     * 测试用例数据
      */
-    @ApiModelProperty(value="测试用例包名",required=true)
-    private String packageName;
+    @ApiModelProperty(value="测试用例数据",required=true)
+    private String caseData;
 
     /**
-     * 类名
+     * 用例名称
      */
-    @ApiModelProperty(value="测试用例类名",required=true)
-    private String className;
-
-    /**
-     * 方法名
-     */
-    @ApiModelProperty(value="测试用例方法名",required=true)
-    private String methodName;
-
-    /**
-     * 用例标识
-     */
-    @ApiModelProperty(value="测试用例标识",required=true)
-    private String caseSign;
+    @ApiModelProperty(value="测试用例名称",required=true)
+    private String caseName;
 
     /**
      * 备注
      */
     @ApiModelProperty(value="测试用例备注",required=true)
     private String remark;
-
-    /**
-     * 删除标志 1 未删除 0 已删除
-     */
-    @ApiModelProperty(value="测试用例删除标志",required=true)
-    private Integer delFlag;
-
 
 }

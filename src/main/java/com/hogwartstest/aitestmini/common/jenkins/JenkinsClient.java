@@ -47,40 +47,16 @@ public class JenkinsClient {
 		log.info("operateJenkinsJobDto==  "+ JSONObject.toJSONString(operateJenkinsJobDto));
 
 		HogwartsTestJenkins hogwartsTestJenkins = operateJenkinsJobDto.getHogwartsTestJenkins();
-		Integer jobType = operateJenkinsJobDto.getJobType();
 		TokenDto tokenDto = operateJenkinsJobDto.getTokenDto();
 		Map<String, String> params = operateJenkinsJobDto.getParams();
-
-		if(Objects.isNull(jobType)){
-			return ResultDto.fail("Job类型不能为空");
-		}
-
-		if (StringUtils.isEmpty(hogwartsTestJenkins.getGitUrl())){
-			return ResultDto.fail("Jenkins未配置git地址");
-		}
-
-		if (StringUtils.isEmpty(hogwartsTestJenkins.getGitBranch())){
-			return ResultDto.fail("Jenkins未配置分支信息");
-		}
 
 		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
 		queryHogwartsTestUser.setId(tokenDto.getUserId());
 		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
 
 		//拼接Job名称
-		String jobName = "";
-		String jobSign = "";
-
-		if(Constants.JOB_TYPE_ONE.equals(jobType)){
-			//拼接Job名称
-			jobName = JenkinsUtil.getCreateCaseJobName(tokenDto.getUserId());
-			jobSign = JenkinsUtil.getJobSignByName(jobName);
-		}
-		if(Constants.JOB_TYPE_TWO.equals(jobType)){
-			//拼接Job名称
-			jobName = JenkinsUtil.getStartTestJobName(tokenDto.getUserId());
-			jobSign = JenkinsUtil.getJobSignByName(jobName);
-		}
+		String jobName = JenkinsUtil.getStartTestJobName(tokenDto.getUserId());
+		String jobSign = JenkinsUtil.getJobSignByName(jobName);
 
 		log.info("=====拼接Job名称====："+ jobName);
 		log.info("=====拼接Job标识====："+ jobSign);
@@ -100,27 +76,15 @@ public class JenkinsClient {
 		}
 
 		//获取根据job类型获取数据库中对应的job名称
-		String dbJobName = "";
-		if(Constants.JOB_TYPE_ONE.equals(jobType)){
-			dbJobName = resultHogwartsTestUser.getAutoCreateCaseJobName();
-		}
-		if(Constants.JOB_TYPE_TWO.equals(jobType)){
-			dbJobName = resultHogwartsTestUser.getStartTestJobName();
-		}
-
+		String dbJobName = resultHogwartsTestUser.getStartTestJobName();
 
 		if(StringUtils.isEmpty(dbJobName)){
 			log.info("=====新建Jenkins执行测试的Job====：");
 
 			createOrUpdateJob(jobName, jobXml, tokenDto.getUserId(), tokenDto.getDefaultJenkinsId(), 1);
 
-			if(Constants.JOB_TYPE_ONE.equals(jobType)){
-				resultHogwartsTestUser.setAutoCreateCaseJobName(jobName);
-			}
-			if(Constants.JOB_TYPE_TWO.equals(jobType)){
-				resultHogwartsTestUser.setStartTestJobName(jobName);
-			}
-			hogwartsTestUserMapper.updateByPrimaryKeySelective(resultHogwartsTestUser);
+            resultHogwartsTestUser.setStartTestJobName(jobName);
+            hogwartsTestUserMapper.updateByPrimaryKeySelective(resultHogwartsTestUser);
 
 		}else {
 			createOrUpdateJob(jobName, jobXml, tokenDto.getUserId(), tokenDto.getDefaultJenkinsId(), 0);
@@ -131,7 +95,7 @@ public class JenkinsClient {
 			JenkinsHttpClient jenkinsHttpClient = jenkinsServerFactory.getJenkinsHttpClient(tokenDto.getUserId(), tokenDto.getDefaultJenkinsId());
 
 			Job job = getJob(jobName, jenkinsHttpClient, hogwartsTestJenkins.getUrl());
-			QueueReference queueReference = build(job, params);
+			build(job, params);
 			return ResultDto.success("成功");
 		}catch (Exception e){
 			String tips = PREFIX_TIPS + "操作Jenkins的Job异常"+e.getMessage();
