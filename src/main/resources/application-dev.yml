@@ -10,9 +10,9 @@ spring:
   application:
     name: aitest
   datasource:
-    url: jdbc:mysql://39.122.47.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: aitest_mini
-    password: hogwarts_test_mini
+    url: jdbc:mysql://47.105.117.0:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: hogwarts_test
+    password: hogwarts_test
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
