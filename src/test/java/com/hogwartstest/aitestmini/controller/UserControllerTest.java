@@ -25,8 +25,8 @@ import javax.servlet.Filter;
  * @Author tlibn
  * @Date 2019/8/4 10:43
  **/
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@RunWith(SpringRunner.class)
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {
 
     //需要使用shiro进行权限校验的接口使用的MockMvc
@@ -39,7 +39,7 @@ public class UserControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-    @Before
+    /*@Before
     public void init() {
         System.out.println("测试开始-----------------");
 
@@ -47,13 +47,13 @@ public class UserControllerTest {
         shiroMvc = MockMvcBuilders.webAppContextSetup(context).addFilters((Filter) context.getBean("shiroFilter")).build();
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
-
+*/
 
     /**
      * 用户注册
      * @throws Exception
      */
-    @Test
+    //@Test
     public void userRegister() throws Exception {
 
         /*User user = new User();
@@ -76,7 +76,7 @@ public class UserControllerTest {
      * 用户登录
      * @throws Exception
      */
-    @Test
+    //@Test
     public void userLogin() throws Exception {
 
         /*User user = new User();
@@ -104,7 +104,7 @@ public class UserControllerTest {
      * 获取当前用户信息
      * @throws Exception
      */
-    @Test
+    //@Test
     public void userCurrent() throws Exception {
         /*userLogin();
 
@@ -165,7 +165,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString("\"resultCode\":0")));
     }*/
 
-    @After
+    //@After
     public void after() {
         System.out.println("测试结束-----------------");
     }
