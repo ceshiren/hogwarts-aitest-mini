@@ -14,10 +14,12 @@ import lombok.Data;
 @Data
 public class QueryHogwartsTestCaseListDto extends BaseDto {
 
-    @ApiModelProperty(value="测试用例标识")
-    private String caseSign;
+    @ApiModelProperty(value="测试用例名称")
+    private String caseName;
 
     @ApiModelProperty(value="创建者id(客户端传值无效，以token数据为准)")
     private Integer createUserId;
+
+
 
 }
