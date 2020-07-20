@@ -53,7 +53,7 @@
             <command>
                 pwd
                 . ~/.bash_profile
-                ${testCommand} || true
+                eval "${testCommand}"
                 eval "${updateStatusData}"
             </command>
         </hudson.tasks.Shell>

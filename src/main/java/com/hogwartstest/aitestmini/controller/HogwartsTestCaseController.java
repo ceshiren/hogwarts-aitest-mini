@@ -102,12 +102,12 @@ public class HogwartsTestCaseController {
         String caseData = IOUtils.toString(inputStream,"UTF-8");
         inputStream.close();
 
-        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
-        hogwartsTestCase.setCaseData(caseData);
-
-        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
         hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
+        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
+        //文件类型时需要将文件中的数据进行赋值
+        hogwartsTestCase.setCaseData(caseData);
 
         ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
         return resultDto;
