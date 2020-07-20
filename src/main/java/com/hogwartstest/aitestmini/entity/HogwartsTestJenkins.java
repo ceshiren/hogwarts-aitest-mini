@@ -58,7 +58,7 @@ public class HogwartsTestJenkins extends BaseEntityNew {
      * 测试用例后缀名 如果case为文件时，此处必填
      */
     @Column(name = "command_run_case_suffix")
-    private String commandRunCasSuffix;
+    private String commandRunCaseSuffix;
 
     /**
      * 备注

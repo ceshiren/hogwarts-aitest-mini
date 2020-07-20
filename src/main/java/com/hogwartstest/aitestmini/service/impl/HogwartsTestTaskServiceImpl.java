@@ -393,16 +393,16 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
         //文件类型
         if(commandRunCaseType==2){
 
-            String commandRunCasSuffix = hogwartsTestJenkins.getCommandRunCasSuffix();
+            String commandRunCaseSuffix = hogwartsTestJenkins.getCommandRunCaseSuffix();
 
-            if(StringUtils.isEmpty(commandRunCasSuffix)){
+            if(StringUtils.isEmpty(commandRunCaseSuffix)){
                 throw new ServiceException("组装测试命令且case为文件时，测试用例后缀名不能为空");
             }
 
             for (HogwartsTestCase hogwartsTestCase :testCaseList) {
 
                 //拼装下载文件的curl命令
-                makeCurlCommand(testCommand, hogwartsTestCase, commandRunCasSuffix);
+                makeCurlCommand(testCommand, hogwartsTestCase, commandRunCaseSuffix);
                 testCommand.append("\n");
                 //拼装命令前缀
                 testCommand.append(systemTestCommand).append(" ");
@@ -411,7 +411,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
                         //拼装.分隔符
                         .append(".")
                         //拼装case文件后缀
-                        .append(commandRunCasSuffix)
+                        .append(commandRunCaseSuffix)
                         .append(" || true")
                         .append("\n");
             }

@@ -69,7 +69,7 @@ public class HogwartsTestJenkinsController {
         String commandRunCasSuffix = addHogwartsTestJenkinsDto.getCommandRunCasSuffix();
         //过滤待.的后缀，如.yml改为yml
         if(!StringUtils.isEmpty(commandRunCasSuffix)){
-            hogwartsTestJenkins.setCommandRunCasSuffix(commandRunCasSuffix.replace(".",""));
+            hogwartsTestJenkins.setCommandRunCaseSuffix(commandRunCasSuffix.replace(".",""));
         }
 
 
@@ -113,7 +113,7 @@ public class HogwartsTestJenkinsController {
         String commandRunCasSuffix = updateHogwartsTestJenkinsDto.getCommandRunCasSuffix();
         //过滤待.的后缀，如.yml改为yml
         if(!StringUtils.isEmpty(commandRunCasSuffix)){
-            hogwartsTestJenkins.setCommandRunCasSuffix(commandRunCasSuffix.replace(".",""));
+            hogwartsTestJenkins.setCommandRunCaseSuffix(commandRunCasSuffix.replace(".",""));
         }
 
         ResultDto<HogwartsTestJenkins> resultDto = hogwartsTestJenkinsService.update(tokenDto, hogwartsTestJenkins);

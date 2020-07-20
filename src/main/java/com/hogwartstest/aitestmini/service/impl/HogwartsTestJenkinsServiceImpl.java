@@ -184,6 +184,16 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 			ResultDto.fail("未查到Jenkins信息");
 		}
 
+		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
+		queryHogwartsTestUser.setId(createUserId);
+
+		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
+		Integer defaultJenkinsId = resultHogwartsTestUser.getDefaultJenkinsId();
+
+		if(result.getId().equals(defaultJenkinsId)){
+			result.setDefaultJenkinsFlag(1);
+		}
+
 		return ResultDto.success("成功",result);
 	}
 
@@ -199,12 +209,26 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 		QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
 		Integer pageNum = pageTableRequest.getPageNum();
 		Integer pageSize = pageTableRequest.getPageSize();
+		Integer createUserId = params.getCreateUserId();
+
+		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
+		queryHogwartsTestUser.setId(createUserId);
+
+		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
+		Integer defaultJenkinsId = resultHogwartsTestUser.getDefaultJenkinsId();
 
 		//总数
 		Integer recordsTotal =  hogwartsTestJenkinsMapper.count(params);
 
 		//分页查询数据
 		List<HogwartsTestJenkins>  hogwartsTestJenkinsList = hogwartsTestJenkinsMapper.list(params, (pageNum - 1) * pageSize, pageSize);
+
+		//查找默认Jenkins
+		for (HogwartsTestJenkins hogwartsTestJenkins:hogwartsTestJenkinsList) {
+			if(hogwartsTestJenkins.getId().equals(defaultJenkinsId)){
+				hogwartsTestJenkins.setDefaultJenkinsFlag(1);
+			}
+		}
 
 		PageTableResponse<HogwartsTestJenkins> hogwartsTestJenkinsPageTableResponse = new PageTableResponse<>();
 		hogwartsTestJenkinsPageTableResponse.setRecordsTotal(recordsTotal);
