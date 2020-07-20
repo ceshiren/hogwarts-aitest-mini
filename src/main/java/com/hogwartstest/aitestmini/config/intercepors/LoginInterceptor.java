@@ -4,6 +4,7 @@ import com.hogwartstest.aitestmini.common.ServiceException;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
 import com.hogwartstest.aitestmini.dto.TokenDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.Objects;
  **/
 
 @Component
+@Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -31,10 +33,26 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String tokenStr = request.getHeader(UserConstants.LOGIN_TOKEN);
 
+        String requestUri = request.getRequestURI();
+        log.info("request.getRequestURI() " + requestUri);
+
+        //如果为swagger文档地址,直接通过
+        boolean swaggerFlag = requestUri.contains("swagger")
+                //过滤spring默认错误页面
+                || requestUri.equals("/error")
+                //过滤csrf
+                || requestUri.equals("/csrf")
+                //过滤http://127.0.0.1:8093/v2/api-docs
+                || requestUri.equals("/favicon.ico")
+                || requestUri.equals("/");
+        if(swaggerFlag){
+            return true;
+        }
+
         //如果请求中含有token
         if(StringUtils.isEmpty(tokenStr)){
             response.setStatus(401);
-            ServiceException.throwEx("客户端未传token");
+            ServiceException.throwEx("客户端未传token "+requestUri);
         }
 
         //获取token
