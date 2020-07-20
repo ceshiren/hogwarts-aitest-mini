@@ -61,6 +61,6 @@ public class AddHogwartsTestJenkinsDto extends BaseEntityNew {
      *
      */
     @ApiModelProperty(value="测试用例后缀名 如果case为文件时，此处必填",required=true)
-    private String commandRunCasSuffix;
+    private String commandRunCaseSuffix;
 
 }
