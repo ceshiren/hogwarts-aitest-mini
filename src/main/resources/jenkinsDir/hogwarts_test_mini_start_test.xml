@@ -51,7 +51,6 @@
     <builders>
         <hudson.tasks.Shell>
             <command>
-                rsync -a /home/hogwarts/jenkins_workspace/workspace/${createCaseJobName}/. .
                 pwd
                 . ~/.bash_profile
                 ${testCommand} || true
