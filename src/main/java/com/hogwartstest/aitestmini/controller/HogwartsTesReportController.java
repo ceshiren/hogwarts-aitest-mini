@@ -11,6 +11,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +34,9 @@ public class HogwartsTesReportController {
 
     @Autowired
     private TokenDb tokenDb;
+
+    @Value("${map.local.env}")
+    private String mapLocalEnv;
 
     /**
      *
@@ -106,6 +111,25 @@ public class HogwartsTesReportController {
         ResultDto<List<HogwartsTestTask>> resultDto = hogwartsTestReportService.getTaskByCaseCount(tokenDto, start, end);
 
         return resultDto;
+    }
+
+    /**
+     * @param param 任意数据，原样返回
+     * @return
+     */
+    @ApiOperation(value = "演示map local")
+    @GetMapping("/showMapLocal")
+    public ResultDto<String> delete(@RequestParam(value = "param",required = false) String param){
+
+        log.info("根据任务类型获取任务统计信息-入参= " + JSONObject.toJSONString(param));
+
+        String mapLocalEnvStr = mapLocalEnv;
+
+        if(!StringUtils.isEmpty(param)){
+            mapLocalEnvStr = mapLocalEnv + "_" + param;
+        }
+
+        return ResultDto.success("成功",mapLocalEnvStr);
     }
 
 

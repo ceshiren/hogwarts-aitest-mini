@@ -1,5 +1,6 @@
 package com.hogwartstest.aitestmini.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.Token;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
@@ -47,6 +48,10 @@ public class HogwartsTestUserController {
 
         log.info("用户注册-入参= "+ addUserDto);
 
+        if(true){
+            return ResultDto.fail("演示环境不可操作");
+        }
+
         if(Objects.isNull(addUserDto)){
             return ResultDto.success("用户信息不能为空");
         }
@@ -72,6 +77,12 @@ public class HogwartsTestUserController {
     @ApiOperation(value = "登录接口")
     @PostMapping("/login")
     public ResultDto<Token> login(@RequestBody LoginUserDto loginUserDto) {
+
+        log.info("用户登录-入参= "+ JSONObject.toJSONString(loginUserDto));
+        if(true){
+            return ResultDto.fail("演示环境不可操作");
+        }
+
         String userName = loginUserDto.getUserName();
         String password = loginUserDto.getPassword();
         log.info("userName= "+userName);

@@ -1,4 +1,4 @@
 spring:
   profiles:
-    active: dev
+    active: test
 ##或spring.profiles.active=dev

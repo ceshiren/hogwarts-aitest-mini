@@ -10,9 +10,9 @@ spring:
   application:
     name: aitest
   datasource:
-    url: jdbc:mysql://39.102.48.202:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: aitest_mini
-    password: hogwarts_test_mini
+    url: jdbc:mysql://mysql:3306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: hogwarts2020
+    password: aitest@hogwarts2020
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
@@ -24,3 +24,8 @@ mybatis:
 logging:
   level:
     com.hogwartstest.aitestmini.dao: debug #打印sql
+
+
+map:
+  local:
+    env: 开发环境

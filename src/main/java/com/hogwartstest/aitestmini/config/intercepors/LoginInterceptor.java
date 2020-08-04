@@ -44,6 +44,8 @@ public class LoginInterceptor implements HandlerInterceptor {
                 || requestUri.equals("/csrf")
                 //过滤http://127.0.0.1:8093/v2/api-docs
                 || requestUri.equals("/favicon.ico")
+                //演示map local 不用校验是否登录
+                || requestUri.equals("/report/showMapLocal")
                 || requestUri.equals("/");
         if(swaggerFlag){
             return true;
