@@ -31,8 +31,6 @@ public class SwaggerConfig {
 				.modelRef(new ModelRef("string")); // 在swagger里显示header
 
 		return new Docket(DocumentationType.SWAGGER_2)
-				//加这个时会报404
-				//.groupName("aitest_interface")
 				.apiInfo(apiInfo())
 				.globalOperationParameters(Lists.newArrayList(builder.build()))
 				.select()
@@ -44,7 +42,7 @@ public class SwaggerConfig {
 		return new ApiInfoBuilder()
 				.title("aitest-mini系统")
 				.description("aitest-mini接口文档")
-				.contact(new Contact("tlibn", "", "103@qq.com"))
+				.contact(new Contact("tlibn", "", "tianlibin@ceshiren.com"))
 				.version("1.0")
 				.build();
 	}

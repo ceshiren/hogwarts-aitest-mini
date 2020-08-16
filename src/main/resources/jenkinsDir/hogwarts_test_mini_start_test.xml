@@ -33,26 +33,18 @@
         </hudson.model.ParametersDefinitionProperty>
     </properties>
     <scm class="hudson.scm.NullSCM"/>
-    <assignedNode>jenkins_slave</assignedNode>
     <canRoam>false</canRoam>
     <disabled>false</disabled>
     <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
     <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
     <triggers/>
     <concurrentBuild>false</concurrentBuild>
-    <axes>
-        <hudson.matrix.LabelAxis>
-            <name>label</name>
-            <values>
-                <string>jenkins_slave</string>
-            </values>
-        </hudson.matrix.LabelAxis>
-    </axes>
+
     <builders>
         <hudson.tasks.Shell>
             <command>
                 pwd
-                . ~/.bash_profile
+                set -x . ~/.bash_profile
                 eval "${testCommand}"
                 eval "${updateStatusData}"
             </command>
