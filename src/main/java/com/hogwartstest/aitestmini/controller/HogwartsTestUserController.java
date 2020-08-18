@@ -49,7 +49,7 @@ public class HogwartsTestUserController {
         log.info("用户注册-入参= "+ addUserDto);
 
         if(true){
-            return ResultDto.fail("演示环境不可操作");
+            return ResultDto.fail("演示环境暂时不对外开放");
         }
 
         if(Objects.isNull(addUserDto)){
@@ -79,9 +79,9 @@ public class HogwartsTestUserController {
     public ResultDto<Token> login(@RequestBody LoginUserDto loginUserDto) {
 
         log.info("用户登录-入参= "+ JSONObject.toJSONString(loginUserDto));
-        if(true){
-            return ResultDto.fail("演示环境不可操作");
-        }
+        /*if(true){
+            return ResultDto.fail("演示环境暂时不对外开放");
+        }*/
 
         String userName = loginUserDto.getUserName();
         String password = loginUserDto.getPassword();
