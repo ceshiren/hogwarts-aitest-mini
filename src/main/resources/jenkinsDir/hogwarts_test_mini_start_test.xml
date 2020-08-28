@@ -42,10 +42,11 @@
     <builders>
         <hudson.tasks.Shell>
             <command>
+
                 pwd
-                set -x . ~/.bash_profile
-                eval "${testCommand}"
-                eval "${updateStatusData}"
+                . /etc/profile
+eval "${testCommand}"
+eval "${updateStatusData}"
             </command>
         </hudson.tasks.Shell>
     </builders>
