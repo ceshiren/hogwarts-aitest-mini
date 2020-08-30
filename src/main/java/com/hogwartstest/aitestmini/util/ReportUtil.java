@@ -15,7 +15,7 @@ public class ReportUtil {
 
     public static void main(String[] args) {
 
-        String buildUrl = "http://aitest.testing-studio.com:8080/job/hogwarts_test_mini_start_test_1/label=jenkins_slave/2/allure/";
+        String buildUrl = "http:///job/hogwarts_test_mini_start_test_1/label=jenkins_slave/2/allure/";
 
          String allureReportBaseUrl = buildUrl.substring(buildUrl.indexOf("/job"));
 
