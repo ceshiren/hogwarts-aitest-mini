@@ -48,9 +48,9 @@ public class HogwartsTestUserController {
 
         log.info("用户注册-入参= "+ addUserDto);
 
-        if(true){
+        /*if(true){
             return ResultDto.fail("演示环境暂时不对外开放");
-        }
+        }*/
 
         if(Objects.isNull(addUserDto)){
             return ResultDto.success("用户信息不能为空");

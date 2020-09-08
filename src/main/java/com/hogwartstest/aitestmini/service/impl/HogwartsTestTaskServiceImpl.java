@@ -86,7 +86,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         hogwartsTestTask.setTaskType(taskType);
         hogwartsTestTask.setTestCommand(testCommand.toString());
-        hogwartsTestTask.setCaseConut(caseIdList.size());
+        hogwartsTestTask.setCaseCount(caseIdList.size());
         hogwartsTestTask.setStatus(Constants.STATUS_ONE);
         hogwartsTestTask.setCreateTime(new Date());
         hogwartsTestTask.setUpdateTime(new Date());
@@ -429,9 +429,9 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
      *  拼装下载文件的curl命令
      * @param testCommand
      * @param hogwartsTestCase
-     * @param commandRunCasSuffix
+     * @param commandRunCaseSuffix
      */
-    private void makeCurlCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase, String commandRunCasSuffix) {
+    private void makeCurlCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase, String commandRunCaseSuffix) {
 
         //通过curl命令获取测试数据并保存为文件
         testCommand.append("curl ")
@@ -445,7 +445,7 @@ public class HogwartsTestTaskServiceImpl implements HogwartsTestTaskService {
 
         testCommand.append(caseName)
                 .append(".")
-                .append(commandRunCasSuffix)
+                .append(commandRunCaseSuffix)
                 .append(" ${aitestBaseUrl}/testCase/data/")
                 .append(hogwartsTestCase.getId())
                 .append(" -H \"token: ${token}\" ");

@@ -41,8 +41,8 @@ public class HogwartsTestTask extends BaseEntityNew {
     /**
      * 用例数量
      */
-    @Column(name = "case_conut")
-    private Integer caseConut;
+    @Column(name = "case_count")
+    private Integer caseCount;
 
     /**
      * 备注
