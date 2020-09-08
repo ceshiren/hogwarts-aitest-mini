@@ -10,7 +10,7 @@ spring:
   application:
     name: aitest
   datasource:
-    url: jdbc:mysql://mysql:13306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://stuq.ceshiren.com:13306/aitest_mini?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: hogwarts2020
     password: aitest@hogwarts2020
     driver-class-name: com.mysql.cj.jdbc.Driver
