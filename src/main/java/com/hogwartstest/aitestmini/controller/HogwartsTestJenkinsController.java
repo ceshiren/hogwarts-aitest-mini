@@ -67,7 +67,7 @@ public class HogwartsTestJenkinsController {
         hogwartsTestJenkins.setCreateUserId(tokenDto.getUserId());
 
         String commandRunCaseSuffix = addHogwartsTestJenkinsDto.getCommandRunCaseSuffix();
-        //过滤待.的后缀，如.yml改为yml
+        //过滤带.的后缀，如.yml改为yml
         if(!StringUtils.isEmpty(commandRunCaseSuffix)){
             hogwartsTestJenkins.setCommandRunCaseSuffix(commandRunCaseSuffix.replace(".",""));
         }
