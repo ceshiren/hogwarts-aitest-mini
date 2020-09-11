@@ -27,7 +27,7 @@ public class TaskDataDto extends BaseDto {
     /**
      * 描述
      */
-    @ApiModelProperty(value="描述", required = true)
+    @ApiModelProperty(value="描述")
     private String desc;
 
 }

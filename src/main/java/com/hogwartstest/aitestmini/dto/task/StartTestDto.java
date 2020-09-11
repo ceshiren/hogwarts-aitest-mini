@@ -21,7 +21,7 @@ public class StartTestDto extends BaseDto {
     /**
      * 执行测试的命令脚本
      */
-    @ApiModelProperty(value="执行测试的命令脚本", required = true, example = "mvn test")
+    @ApiModelProperty(value="执行测试的命令脚本", example = "mvn test")
     private String testCommand;
 
 }

@@ -24,7 +24,7 @@ public class AddHogwartsTestCaseDto extends BaseEntityNew {
     /**
      * 备注
      */
-    @ApiModelProperty(value="测试用例备注",required=true)
+    @ApiModelProperty(value="测试用例备注")
     private String remark;
 
 }

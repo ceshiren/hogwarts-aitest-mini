@@ -42,7 +42,7 @@ public class AddHogwartsTestJenkinsDto extends BaseEntityNew {
     /**
      * 备注
      */
-    @ApiModelProperty(value="Jenkins备注",required=true)
+    @ApiModelProperty(value="Jenkins备注")
     private String remark;
 
     /**

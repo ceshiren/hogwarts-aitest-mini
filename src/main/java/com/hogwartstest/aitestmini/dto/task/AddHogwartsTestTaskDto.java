@@ -23,7 +23,7 @@ public class AddHogwartsTestTaskDto extends BaseEntityNew {
     /**
      * 备注
      */
-    @ApiModelProperty(value="任务备注",required=true)
+    @ApiModelProperty(value="任务备注")
     private String remark;
 
     @ApiModelProperty(value="创建者id(客户端传值无效，以token数据为准)")
