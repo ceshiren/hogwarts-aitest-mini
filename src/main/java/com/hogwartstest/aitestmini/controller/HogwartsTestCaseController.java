@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +68,7 @@ public class HogwartsTestCaseController {
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
 
+        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
         CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
@@ -105,6 +107,7 @@ public class HogwartsTestCaseController {
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
         hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
+        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
         CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
         //文件类型时需要将文件中的数据进行赋值
         hogwartsTestCase.setCaseData(caseData);
@@ -141,6 +144,7 @@ public class HogwartsTestCaseController {
         }
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
         CopyUtil.copyPropertiesCglib(updateHogwartsTestCaseDto,hogwartsTestCase);
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));

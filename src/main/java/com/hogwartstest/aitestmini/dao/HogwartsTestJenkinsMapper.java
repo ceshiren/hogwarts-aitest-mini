@@ -25,6 +25,6 @@ public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<Hogwarts
      * @param pageSize
      * @return
      */
-    List<HogwartsTestJenkins> list(@Param("params") QueryHogwartsTestJenkinsListDto params, @Param("pageNum") Integer pageNum,
-                           @Param("pageSize") Integer pageSize);
+    List<HogwartsTestJenkins> list(@Param("params") QueryHogwartsTestJenkinsListDto params,
+                                   @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
 }

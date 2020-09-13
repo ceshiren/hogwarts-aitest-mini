@@ -45,7 +45,7 @@ public class HogwartsTesReportController {
      */
     @ApiOperation(value = "获取allure报告")
     @GetMapping("/allureReport/{taskId}")
-    public ResultDto<AllureReportDto> save(HttpServletRequest request, @PathVariable Integer taskId){
+    public ResultDto<AllureReportDto> getAllureReport(HttpServletRequest request, @PathVariable Integer taskId){
 
         log.info("报告管理-入参 taskId= "+ taskId);
 
@@ -66,7 +66,7 @@ public class HogwartsTesReportController {
      */
     @ApiOperation(value = "根据任务类型获取任务统计信息 - 饼状图")
     @GetMapping("/taskByType")
-    public ResultDto<TaskReportDto> update(HttpServletRequest request){
+    public ResultDto<TaskReportDto> getTaskByType(HttpServletRequest request){
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         log.info("根据任务类型获取任务统计信息-入参= " + JSONObject.toJSONString(tokenDto));
@@ -82,7 +82,7 @@ public class HogwartsTesReportController {
      */
     @ApiOperation(value = "根据任务状态获取任务统计信息 - 饼状图")
     @GetMapping("/taskByStatus")
-    public ResultDto<TaskReportDto> getById(HttpServletRequest request){
+    public ResultDto<TaskReportDto> getTaskByStatus(HttpServletRequest request){
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         log.info("根据任务类型获取任务统计信息-入参= " + JSONObject.toJSONString(tokenDto));
@@ -101,7 +101,7 @@ public class HogwartsTesReportController {
      */
     @ApiOperation(value = "任务中用例的数量统计信息 - 折线图")
     @GetMapping("/taskByCaseCount")
-    public ResultDto<List<HogwartsTestTask>> delete(HttpServletRequest request
+    public ResultDto<List<HogwartsTestTask>> getTaskByCaseCount(HttpServletRequest request
             , @RequestParam(value = "start",required = false) Integer start
             , @RequestParam(value = "end",required = false) Integer end){
 
@@ -119,7 +119,7 @@ public class HogwartsTesReportController {
      */
     @ApiOperation(value = "演示map local")
     @GetMapping("/showMapLocal")
-    public ResultDto<String> delete(@RequestParam(value = "param",required = false) String param){
+    public ResultDto<String> showMapLocal(@RequestParam(value = "param",required = false) String param){
 
         log.info("根据任务类型获取任务统计信息-入参= " + JSONObject.toJSONString(param));
 

@@ -2,7 +2,6 @@ package com.hogwartstest.aitestmini.common.jenkins;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.ServiceException;
-import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;

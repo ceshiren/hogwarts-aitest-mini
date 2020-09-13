@@ -189,7 +189,7 @@ public class HogwartsTestTaskController {
      * @param updateHogwartsTestTaskStatusDto
      * @return
      */
-    @ApiOperation(value = "修改测试任务")
+    @ApiOperation(value = "修改测试任务状态")
     @PutMapping("status")
     public ResultDto<HogwartsTestTask> updateStatus(HttpServletRequest request, @RequestBody UpdateHogwartsTestTaskStatusDto updateHogwartsTestTaskStatusDto){
 

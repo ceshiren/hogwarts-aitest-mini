@@ -221,7 +221,8 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 		Integer recordsTotal =  hogwartsTestJenkinsMapper.count(params);
 
 		//分页查询数据
-		List<HogwartsTestJenkins>  hogwartsTestJenkinsList = hogwartsTestJenkinsMapper.list(params, (pageNum - 1) * pageSize, pageSize);
+		List<HogwartsTestJenkins>  hogwartsTestJenkinsList = hogwartsTestJenkinsMapper
+				.list(params, (pageNum - 1) * pageSize, pageSize);
 
 		//查找默认Jenkins
 		for (HogwartsTestJenkins hogwartsTestJenkins:hogwartsTestJenkinsList) {
