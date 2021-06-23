@@ -3,13 +3,10 @@ package com.hogwartstest.aitestmini.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
+import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.jenkins.AddHogwartsTestJenkinsDto;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
 import com.hogwartstest.aitestmini.dto.jenkins.UpdateHogwartsTestJenkinsDto;
-import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 import com.hogwartstest.aitestmini.service.HogwartsTestJenkinsService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
@@ -21,6 +18,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -169,7 +168,7 @@ public class HogwartsTestJenkinsController {
      */
     @ApiOperation(value = "列表查询")
     @GetMapping("/list")
-    public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(HttpServletRequest request, PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest){
+    public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(HttpServletRequest request, PageTableRequest1 pageTableRequest){
 
         if(Objects.isNull(pageTableRequest)){
             return ResultDto.success("列表查询参数不能为空");
@@ -179,12 +178,12 @@ public class HogwartsTestJenkinsController {
 
         log.info("列表查询-入参= "+ JSONObject.toJSONString(pageTableRequest) + "tokenDto=  " +JSONObject.toJSONString(tokenDto));
 
-        QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
+        Map params = pageTableRequest.getParams();
 
         if(Objects.isNull(params)){
-            params = new QueryHogwartsTestJenkinsListDto();
+            params = new HashMap();
         }
-        params.setCreateUserId(tokenDto.getUserId());
+        params.put("createUserId",tokenDto.getUserId());
         pageTableRequest.setParams(params);
 
         ResultDto<PageTableResponse<HogwartsTestJenkins>> responseResultDto = hogwartsTestJenkinsService.list(pageTableRequest);

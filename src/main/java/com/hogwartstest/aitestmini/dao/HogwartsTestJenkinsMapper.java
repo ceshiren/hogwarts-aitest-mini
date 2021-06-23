@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<HogwartsTestJenkins> {
@@ -16,7 +17,7 @@ public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<Hogwarts
      * @param params
      * @return
      */
-    Integer count(@Param("params") QueryHogwartsTestJenkinsListDto params);
+    Integer count(@Param("params") Map params);
 
     /**
      * 列表分页查询
@@ -25,6 +26,6 @@ public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<Hogwarts
      * @param pageSize
      * @return
      */
-    List<HogwartsTestJenkins> list(@Param("params") QueryHogwartsTestJenkinsListDto params,
+    List<HogwartsTestJenkins> list(@Param("params") Map params,
                                    @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
 }

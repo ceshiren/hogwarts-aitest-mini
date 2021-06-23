@@ -1,11 +1,16 @@
 package com.hogwartstest.aitestmini.config;
 
+import com.hogwartstest.aitestmini.common.PageTableArgumentResolver;
 import com.hogwartstest.aitestmini.config.intercepors.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+
+import java.util.List;
 
 /**
  * @Author tlibn
@@ -17,6 +22,20 @@ public class WebAppConfig extends WebMvcConfigurationSupport {
     @Autowired
     private LoginInterceptor loginInterceptor;
 
+    /**
+     * datatable分页解析
+     *
+     * @return
+     */
+    @Bean
+    public PageTableArgumentResolver tableHandlerMethodArgumentResolver() {
+        return new PageTableArgumentResolver();
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(tableHandlerMethodArgumentResolver());
+    }
 
     // 这个方法是用来配置静态资源的，比如html，js，css，等等
     @Override

@@ -1,10 +1,7 @@
 package com.hogwartstest.aitestmini.service;
 
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
-import com.hogwartstest.aitestmini.dto.TokenDto;
+import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
-import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 
 public interface HogwartsTestJenkinsService {
@@ -33,7 +30,7 @@ public interface HogwartsTestJenkinsService {
 
 	/**
 	 *  根据id查询Jenkins信息
-	 * @param id
+	 * @param createUserId
 	 * @return
 	 */
 	ResultDto<HogwartsTestJenkins> getById(Integer jenkinsId,Integer createUserId);
@@ -43,6 +40,6 @@ public interface HogwartsTestJenkinsService {
 	 * @param pageTableRequest
 	 * @return
 	 */
-	ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest);
+	ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest1 pageTableRequest);
 
 }

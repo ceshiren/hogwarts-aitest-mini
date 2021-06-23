@@ -3,11 +3,8 @@ package com.hogwartstest.aitestmini.service.impl;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.dao.HogwartsTestJenkinsMapper;
 import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
-import com.hogwartstest.aitestmini.dto.TokenDto;
+import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
-import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
 import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestJenkinsService;
@@ -18,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -204,12 +202,12 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 * @return
 	 */
 	@Override
-	public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest) {
+	public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest1 pageTableRequest) {
 
-		QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
+		Map params = pageTableRequest.getParams();
 		Integer pageNum = pageTableRequest.getPageNum();
 		Integer pageSize = pageTableRequest.getPageSize();
-		Integer createUserId = params.getCreateUserId();
+		Integer createUserId = Integer.parseInt(params.get("createUserId").toString());
 
 		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
 		queryHogwartsTestUser.setId(createUserId);
