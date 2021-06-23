@@ -40,6 +40,6 @@ public interface HogwartsTestJenkinsService {
 	 * @param pageTableRequest
 	 * @return
 	 */
-	ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest1 pageTableRequest);
+	ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest);
 
 }

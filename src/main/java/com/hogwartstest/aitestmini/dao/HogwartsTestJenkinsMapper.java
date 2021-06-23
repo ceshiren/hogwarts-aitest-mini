@@ -17,7 +17,7 @@ public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<Hogwarts
      * @param params
      * @return
      */
-    Integer count(@Param("params") Map params);
+    Integer count(@Param("params") QueryHogwartsTestJenkinsListDto params);
 
     /**
      * 列表分页查询
@@ -26,6 +26,6 @@ public interface HogwartsTestJenkinsMapper extends MySqlExtensionMapper<Hogwarts
      * @param pageSize
      * @return
      */
-    List<HogwartsTestJenkins> list(@Param("params") Map params,
+    List<HogwartsTestJenkins> list(@Param("params") QueryHogwartsTestJenkinsListDto params,
                                    @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
 }

@@ -202,12 +202,12 @@ public class HogwartsTestJenkinsServiceImpl implements HogwartsTestJenkinsServic
 	 * @return
 	 */
 	@Override
-	public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest1 pageTableRequest) {
+	public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest) {
 
-		Map params = pageTableRequest.getParams();
+		QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
 		Integer pageNum = pageTableRequest.getPageNum();
 		Integer pageSize = pageTableRequest.getPageSize();
-		Integer createUserId = Integer.parseInt(params.get("createUserId").toString());
+		Integer createUserId = params.getCreateUserId();
 
 		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
 		queryHogwartsTestUser.setId(createUserId);

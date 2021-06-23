@@ -168,7 +168,7 @@ public class HogwartsTestJenkinsController {
      */
     @ApiOperation(value = "列表查询")
     @GetMapping("/list")
-    public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(HttpServletRequest request, PageTableRequest1 pageTableRequest){
+    public ResultDto<PageTableResponse<HogwartsTestJenkins>> list(HttpServletRequest request, PageTableRequest<QueryHogwartsTestJenkinsListDto> pageTableRequest){
 
         if(Objects.isNull(pageTableRequest)){
             return ResultDto.success("列表查询参数不能为空");
@@ -178,12 +178,12 @@ public class HogwartsTestJenkinsController {
 
         log.info("列表查询-入参= "+ JSONObject.toJSONString(pageTableRequest) + "tokenDto=  " +JSONObject.toJSONString(tokenDto));
 
-        Map params = pageTableRequest.getParams();
+        QueryHogwartsTestJenkinsListDto params = pageTableRequest.getParams();
 
         if(Objects.isNull(params)){
-            params = new HashMap();
+            params = new QueryHogwartsTestJenkinsListDto();
         }
-        params.put("createUserId",tokenDto.getUserId());
+        params.setCreateUserId(tokenDto.getUserId());
         pageTableRequest.setParams(params);
 
         ResultDto<PageTableResponse<HogwartsTestJenkins>> responseResultDto = hogwartsTestJenkinsService.list(pageTableRequest);
