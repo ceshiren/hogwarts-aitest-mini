@@ -1,14 +1,9 @@
 package com.hogwartstest.aitestmini.common;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableRequest1;
 import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -16,7 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -58,6 +52,8 @@ public class PageTableArgumentResolver implements HandlerMethodArgumentResolver 
 		});
 
         String requestUri = request.getRequestURI();
+
+        //如果是Jenkins列表查询，则将数据转换为Jenkins查询dto，其他接原理类似
 		if(requestUri.contains("/jenkins/list")){
             QueryHogwartsTestJenkinsListDto queryHogwartsTestJenkinsListDto
                     = JSONObject.parseObject(json.toJSONString(),QueryHogwartsTestJenkinsListDto.class);
