@@ -75,7 +75,8 @@ public class HogwartsTestUserServiceImpl implements HogwartsTestUserService {
 		queryHogwartsTestUser.setUserName(userName);
 		queryHogwartsTestUser.setPassword(newPwd);
 
-		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
+		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper
+				.selectOne(queryHogwartsTestUser);
 
 		if(Objects.isNull(resultHogwartsTestUser)){
 			return ResultDto.fail("用户不存在或密码错误");

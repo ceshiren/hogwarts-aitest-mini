@@ -1,8 +1,8 @@
 package com.hogwartstest.aitestmini.common;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.jenkins.QueryHogwartsTestJenkinsListDto;
+import com.hogwartstest.aitestmini.dto.PageTableRequest1;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -23,15 +23,16 @@ public class PageTableArgumentResolver implements HandlerMethodArgumentResolver 
 	public boolean supportsParameter(MethodParameter parameter) {
 		Class<?> cla = parameter.getParameterType();
 
-		return cla.isAssignableFrom(PageTableRequest.class);
+		return cla.isAssignableFrom(PageTableRequest1.class);
 	}
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+
 		HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-		PageTableRequest tableRequest = new PageTableRequest();
+		PageTableRequest1 tableRequest = new PageTableRequest1();
 		Map<String, String[]> param = request.getParameterMap();
 		if (param.containsKey("pageNum")) {
 			tableRequest.setPageNum(Integer.parseInt(request.getParameter("pageNum")));
@@ -41,25 +42,19 @@ public class PageTableArgumentResolver implements HandlerMethodArgumentResolver 
 			tableRequest.setPageSize(Integer.parseInt(request.getParameter("pageSize")));
 		}
 
-		JSONObject json = new JSONObject();
+		Map<String, Object> map = Maps.newHashMap();
+		tableRequest.setParams(map);
 
 		param.forEach((k, v) -> {
 			if (v.length == 1) {
-                json.put(k, v[0]);
+				map.put(k, v[0]);
 			} else {
-                json.put(k, Arrays.asList(v));
+				map.put(k, Arrays.asList(v));
 			}
 		});
 
-        String requestUri = request.getRequestURI();
-
-        //如果是Jenkins列表查询，则将数据转换为Jenkins查询dto，其他接原理类似
-		if(requestUri.contains("/jenkins/list")){
-            QueryHogwartsTestJenkinsListDto queryHogwartsTestJenkinsListDto
-                    = JSONObject.parseObject(json.toJSONString(),QueryHogwartsTestJenkinsListDto.class);
-            tableRequest.setParams(queryHogwartsTestJenkinsListDto);
-        }
 		return tableRequest;
 	}
 
 }
+

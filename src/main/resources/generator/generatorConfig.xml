@@ -17,7 +17,7 @@
         </plugin>
 
         <jdbcConnection driverClass="${jdbc.driverClass}"
-                        connectionURL="jdbc:mysql://aitest.testing-studio.com:3306/aitest_mini?characterEncoding=utf8"
+                        connectionURL="jdbc:mysql://stuq.ceshiren.com:13306/aitest_mini?characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai"
                         userId="${jdbc.user}"
                         password="${jdbc.password}">
         </jdbcConnection>
@@ -31,26 +31,26 @@
         <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}"
                              type="XMLMAPPER"/>
 
-        <!-- 生成用户的相关类 -->
+       <!-- &lt;!&ndash; 生成用户的相关类 &ndash;&gt;
         <table schema="aitest_mini" tableName="hogwarts_test_user" domainObjectName="HogwartsTestUser" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
 
-        <!-- 生成Jenkins的相关类 -->
+        &lt;!&ndash; 生成Jenkins的相关类 &ndash;&gt;
         <table schema="aitest_mini" tableName="hogwarts_test_jenkins" domainObjectName="HogwartsTestJenkins" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
 
-        <!-- 生成测试用例的相关类 -->
+        &lt;!&ndash; 生成测试用例的相关类 &ndash;&gt;
         <table schema="aitest_mini" tableName="hogwarts_test_case" domainObjectName="HogwartsTestCase" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
             <columnOverride column="del_flag" javaType="Integer" jdbcType="TINYINT" />
         </table>
 
-        <!-- 生成测试任务的相关类 -->
+        &lt;!&ndash; 生成测试任务的相关类 &ndash;&gt;
         <table schema="aitest_mini" tableName="hogwarts_test_task" domainObjectName="HogwartsTestTask" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
@@ -58,10 +58,16 @@
             <columnOverride column="status" javaType="Integer" jdbcType="TINYINT" />
         </table>
 
-        <!-- 生成测试任务和用例关联的相关类 -->
+        &lt;!&ndash; 生成测试任务和用例关联的相关类 &ndash;&gt;
         <table schema="aitest_mini" tableName="hogwarts_test_task_case_rel" domainObjectName="HogwartsTestTaskCaseRel" enableCountByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" enableUpdateByExample="false" >
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+
+        <table schema="aitest_mini_jmeter" tableName="hogwarts_test_his" domainObjectName="HogwartsTestHis" enableCountByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" enableUpdateByExample="false" >
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            <columnOverride column="status" javaType="Integer" jdbcType="TINYINT" />
         </table>
 
     </context>
