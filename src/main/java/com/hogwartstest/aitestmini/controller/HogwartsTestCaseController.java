@@ -49,7 +49,7 @@ public class HogwartsTestCaseController {
      * @param addHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
+    @ApiOperation(value = "新增测试用例-文本", notes="仅用于测试用户")
     @PostMapping("text")
     public ResultDto saveText(HttpServletRequest request, @RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
 
@@ -82,7 +82,7 @@ public class HogwartsTestCaseController {
      * @param addHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
+    @ApiOperation(value = "新增测试用例-文件上传", notes="仅用于测试用户")
     @PostMapping("file")
     public ResultDto saveFile(HttpServletRequest request, @RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
 
@@ -225,20 +225,17 @@ public class HogwartsTestCaseController {
     }
 
     /**
-     * 根据caseId查询case原始数据
-     *  地址不要随便改 ${caseDataUrl}/testcase/data/  有引用
+     *
      * @param caseId 测试用例id
      * @return
      */
-    @ApiOperation(value = "根据测试用例id查询")
-    @GetMapping("data/{caseId}")
-    public String getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) {
-        log.info("=====根据用户id和caseId查询case原始数据-请求入参====："+ caseId);
+    @ApiOperation(value = "执行测试用例")
+    @PostMapping("run/{caseId}")
+    public ResultDto getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) {
+        log.info("=====执行测试用例-请求入参====："+ caseId);
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        String caseData = hogwartsTestCaseService.getCaseDataById(tokenDto.getUserId(), caseId);
-        log.info("=====根据用户id和caseId查询case原始数据-请求出参====："+ caseData);
-        return caseData;
+        return hogwartsTestCaseService.runCase(tokenDto.getUserId(), caseId);
     }
 
 

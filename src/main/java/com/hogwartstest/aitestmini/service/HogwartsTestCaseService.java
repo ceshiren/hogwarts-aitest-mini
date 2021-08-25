@@ -51,6 +51,6 @@ public interface HogwartsTestCaseService {
 	 * @param caseId
 	 * @return
 	 */
-	String getCaseDataById(Integer createUserId, Integer caseId);
+	ResultDto runCase(Integer createUserId, Integer caseId);
 
 }

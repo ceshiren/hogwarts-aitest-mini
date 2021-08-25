@@ -8,11 +8,16 @@ import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
+import com.hogwartstest.aitestmini.entity.HogwartsTestHis;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
+import com.hogwartstest.aitestmini.service.HogwartsTestHisService;
+import com.hogwartstest.aitestmini.util.CommandUtil;
 import com.hogwartstest.aitestmini.util.CopyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +32,12 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
     @Autowired
     private HogwartsTestCaseMapper hogwartsTestCaseMapper;
+
+    @Autowired
+    private HogwartsTestHisService hogwartsTestHisService;
+
+    @Autowired
+    private CommandUtil commandUtil;
 
     /**
      *
@@ -155,32 +166,55 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     }
 
     /**
-     * 根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+     * 执行测试用例
      *
      * @param createUserId
      * @param caseId
      * @return
      */
     @Override
-    public String getCaseDataById(Integer createUserId, Integer caseId) {
+    public ResultDto runCase(Integer createUserId, Integer caseId) {
         if(Objects.isNull(caseId)){
-            return "用例id为空";
+            return ResultDto.fail("用例id为空");
         }
 
         HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
         queryHogwartsTestCase.setCreateUserId(createUserId);
         queryHogwartsTestCase.setId(caseId);
-        log.info("=====根据测试用例id查询case原始数据-查库入参====："+ JSONObject.toJSONString(queryHogwartsTestCase));
+        log.info("=====执行测试用例-查库入参====："+ JSONObject.toJSONString(queryHogwartsTestCase));
         HogwartsTestCase resultHogwartsTestCase = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
 
         if(Objects.isNull(resultHogwartsTestCase)){
-            return "用例数据未查到";
-        }
-        if(StringUtils.isEmpty(resultHogwartsTestCase.getCaseData())){
-            return "用例原始数据未查到";
+            return ResultDto.fail("用例数据未查到");
         }
 
-        return resultHogwartsTestCase.getCaseData();
+        String caseData = resultHogwartsTestCase.getCaseData();
+
+        if(StringUtils.isEmpty(caseData)){
+            return ResultDto.fail("用例测试命令未查到");
+        }
+        HogwartsTestHis hogwartsTestHis = new HogwartsTestHis();
+
+        hogwartsTestHis.setCreateUserId(createUserId);
+        hogwartsTestHis.setCaseId(caseId);
+        hogwartsTestHis.setStatus(2);
+
+        ResultDto<HogwartsTestHis>  hogwartsTestHisResultDto =
+                hogwartsTestHisService.save(hogwartsTestHis);
+
+        if(hogwartsTestHisResultDto.getResultCode()==0){
+            return hogwartsTestHisResultDto;
+        }
+
+        HogwartsTestHis resultHogwartsTestHis = hogwartsTestHisResultDto.getData();
+
+        RunCaseDto runCaseDto = new RunCaseDto();
+        runCaseDto.setHogwartsTestHis(resultHogwartsTestHis);
+        runCaseDto.setHogwartsTestCommand(caseData);
+
+        commandUtil.run(runCaseDto);
+
+        return ResultDto.success("成功");
     }
 
 }

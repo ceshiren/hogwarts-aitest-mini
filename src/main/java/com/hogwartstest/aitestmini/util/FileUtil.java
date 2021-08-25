@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * 文件工具类
- * 
+ *
  */
 @Slf4j
 public class FileUtil {
@@ -43,13 +43,14 @@ public class FileUtil {
 		File file = new File(pathname);
 		if (file.exists()) {
 			boolean flag = file.delete();
+			file.getParentFile().setWritable(true);
 
-			if (flag) {
+			/*if (flag) {
 				File[] files = file.getParentFile().listFiles();
 				if (files == null || files.length == 0) {
 					file.getParentFile().delete();
 				}
-			}
+			}*/
 
 			return flag;
 		}
@@ -73,7 +74,7 @@ public class FileUtil {
 
 	/**
 	 * 将文本写入文件
-	 * 
+	 *
 	 * @param value
 	 * @param path
 	 */

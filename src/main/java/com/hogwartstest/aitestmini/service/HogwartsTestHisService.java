@@ -11,14 +11,14 @@ public interface HogwartsTestHisService {
 	 * @param hogwartsTestHis
 	 * @return
 	 */
-	ResultDto<HogwartsTestHis> save(TokenDto tokenDto, HogwartsTestHis hogwartsTestHis);
+	ResultDto<HogwartsTestHis> save(HogwartsTestHis hogwartsTestHis);
 
 	/**
 	 *  修改测试记录信息
 	 * @param hogwartsTestHis
 	 * @return
 	 */
-	ResultDto<HogwartsTestHis> update(TokenDto tokenDto, HogwartsTestHis hogwartsTestHis);
+	ResultDto<HogwartsTestHis> update(HogwartsTestHis hogwartsTestHis);
 
 	/**
 	 *  查询测试记录信息列表

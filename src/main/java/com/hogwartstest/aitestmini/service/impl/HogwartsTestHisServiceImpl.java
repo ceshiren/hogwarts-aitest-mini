@@ -6,6 +6,7 @@ import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.entity.HogwartsTestHis;
 import com.hogwartstest.aitestmini.service.HogwartsTestHisService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,6 @@ public class HogwartsTestHisServiceImpl implements HogwartsTestHisService {
 	@Autowired
 	private HogwartsTestHisMapper hogwartsTestHisMapper;
 
-	@Autowired
-	private TokenDb tokenDb;
-
 
 	/**
 	 * 新增测试记录信息
@@ -34,7 +32,7 @@ public class HogwartsTestHisServiceImpl implements HogwartsTestHisService {
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ResultDto<HogwartsTestHis> save(TokenDto tokenDto, HogwartsTestHis hogwartsTestHis) {
+	public ResultDto<HogwartsTestHis> save(HogwartsTestHis hogwartsTestHis) {
 
 		hogwartsTestHis.setCreateTime(new Date());
 		hogwartsTestHis.setUpdateTime(new Date());
@@ -50,7 +48,7 @@ public class HogwartsTestHisServiceImpl implements HogwartsTestHisService {
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public ResultDto<HogwartsTestHis> update(TokenDto tokenDto, HogwartsTestHis hogwartsTestHis) {
+	public ResultDto<HogwartsTestHis> update(HogwartsTestHis hogwartsTestHis) {
 
 		HogwartsTestHis queryHogwartsTestHis = new HogwartsTestHis();
 
@@ -64,7 +62,11 @@ public class HogwartsTestHisServiceImpl implements HogwartsTestHisService {
 			return ResultDto.fail("未查到测试记录信息");
 		}
 
+		//先赋值原创建时间
 		result.setCreateTime(result.getCreateTime());
+		//再赋值
+		BeanUtils.copyProperties(hogwartsTestHis, result);
+		//重新设置更新时间为当前时间
 		result.setUpdateTime(new Date());
 
 		hogwartsTestHisMapper.updateByPrimaryKey(result);
