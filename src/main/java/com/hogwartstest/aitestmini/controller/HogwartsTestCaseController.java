@@ -231,7 +231,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "执行测试用例")
     @PostMapping("run/{caseId}")
-    public ResultDto getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) {
+    public ResultDto getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) throws Exception {
         log.info("=====执行测试用例-请求入参====："+ caseId);
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));

@@ -21,7 +21,7 @@ public class RuntimeTest {
         try {
             //Process p = run.exec("ping 127.0.0.1");
             //Process p = run.exec("java -version");
-            Process p = run.exec("jmeter -n -t G:/ceba/jmeter_install_dir/demo/10246_13/13.jmx  -l G:/ceba/jmeter_install_dir/demo/10246_13/log/13 -e -o G:/ceba/jmeter_install_dir/demo/10246_13/report/13");
+            Process p = run.exec("G:/ceba/jmeter_install_dir/apache-jmeter-5.3/bin/jmeter.bat -n -t G:/ceba/jmeter_install_dir/demo/10246_13/13.jmx  -l G:/ceba/jmeter_install_dir/demo/10246_13/log/13 -e -o G:/ceba/jmeter_install_dir/demo/10246_13/report/13");
 
             InputStream ins= p.getInputStream();
             InputStream ers= p.getErrorStream();

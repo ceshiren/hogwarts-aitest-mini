@@ -6,6 +6,8 @@ import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 
+import java.io.IOException;
+
 public interface HogwartsTestCaseService {
 
 	/**
@@ -51,6 +53,6 @@ public interface HogwartsTestCaseService {
 	 * @param caseId
 	 * @return
 	 */
-	ResultDto runCase(Integer createUserId, Integer caseId);
+	ResultDto runCase(Integer createUserId, Integer caseId) throws Exception;
 
 }
