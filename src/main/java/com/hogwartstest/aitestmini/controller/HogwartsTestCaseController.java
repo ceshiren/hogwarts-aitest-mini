@@ -235,7 +235,7 @@ public class HogwartsTestCaseController {
         log.info("=====执行测试用例-请求入参====："+ caseId);
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        return hogwartsTestCaseService.runCase(tokenDto.getUserId(), caseId);
+        return hogwartsTestCaseService.runCase3(tokenDto.getUserId(), caseId);
     }
 
 

@@ -1,6 +1,5 @@
 package com.hogwartstest.aitestmini.service.impl;
 
-import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.jmeter.ApiRunMode;
 import com.hogwartstest.aitestmini.common.jmeter.JMeterVars;
@@ -11,37 +10,33 @@ import com.hogwartstest.aitestmini.dao.HogwartsTestCaseMapper;
 import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
-import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
-import com.hogwartstest.aitestmini.entity.HogwartsTestHis;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
-import com.hogwartstest.aitestmini.service.HogwartsTestHisService;
-import com.hogwartstest.aitestmini.util.CommandUtil;
-import com.hogwartstest.aitestmini.util.CopyUtil;
 import com.hogwartstest.aitestmini.util.JMeterUtil;
 import com.hogwartstest.aitestmini.util.StreamUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.jmeter.JMeter;
+import org.apache.jmeter.control.ReplaceableController;
+import org.apache.jmeter.gui.tree.JMeterTreeModel;
+import org.apache.jmeter.gui.tree.JMeterTreeNode;
+import org.apache.jmeter.report.dashboard.ReportGenerator;
+import org.apache.jmeter.reporters.ResultCollector;
+import org.apache.jmeter.reporters.Summariser;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
+import org.apache.jorphan.collections.SearchByClass;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -49,12 +44,6 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
     @Autowired
     private HogwartsTestCaseMapper hogwartsTestCaseMapper;
-
-    @Autowired
-    private HogwartsTestHisService hogwartsTestHisService;
-
-    @Autowired
-    private CommandUtil commandUtil;
 
     @Resource
     private JmeterProperties jmeterProperties;
@@ -267,6 +256,127 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
         InputStream is = StreamUtil.getStrToStream(caseData);
         Object scriptWrapper = SaveService.loadElement(is);
+        HashTree tree = JMeterUtil.getHashTree(scriptWrapper);
+        JMeterVars.addJSR223PostProcessor(tree);
+
+        @SuppressWarnings("deprecation") // Deliberate use of deprecated ctor
+        JMeterTreeModel treeModel = new JMeterTreeModel(new Object());// NOSONAR Create non-GUI version to avoid headless problems
+        JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();
+        treeModel.addSubTree(tree, root);
+
+        // Hack to resolve ModuleControllers in non GUI mode
+        SearchByClass<ReplaceableController> replaceableControllers =
+                new SearchByClass<>(ReplaceableController.class);
+        tree.traverse(replaceableControllers);
+        Collection<ReplaceableController> replaceableControllersRes = replaceableControllers.getSearchResults();
+        for (ReplaceableController replaceableController : replaceableControllersRes) {
+            replaceableController.resolveReplacementSubTree(root);
+        }
+
+        // Ensure tree is interpreted (ReplaceableControllers are replaced)
+        // For GUI runs this is done in Start.java
+        HashTree clonedTree = JMeter.convertSubTree(tree, true);
+
+        Summariser summariser = null;
+        String summariserName = JMeterUtils.getPropDefault("summariser.name", "");//$NON-NLS-1$
+        if (summariserName.length() > 0) {
+            log.info("Creating summariser <{}>", summariserName);
+            log.info("Creating summariser <" + summariserName + ">");
+            summariser = new Summariser(summariserName);
+        }
+
+        //todo
+        String logFile = "G:\\ceba\\jmeter_install_dir\\demo\\log\\csvlog.log";
+
+        ResultCollector resultCollector = null;
+        if (logFile != null) {
+            resultCollector = new ResultCollector(summariser);
+            resultCollector.setFilename(logFile);
+            clonedTree.add(clonedTree.getArray()[0], resultCollector);
+        } else {
+            // only add Summariser if it can not be shared with the ResultCollector
+            if (summariser != null) {
+                clonedTree.add(clonedTree.getArray()[0], summariser);
+            }
+        }
+
+        //todo
+        boolean generateReportDashboard = true;
+
+        ReportGenerator reportGenerator = null;
+        if (logFile != null && generateReportDashboard) {
+            reportGenerator = new ReportGenerator(logFile, resultCollector);
+        }
+
+        // Used for remote notification of threads start/stop,see BUG 54152
+        // Summariser uses this feature to compute correctly number of threads
+        // when NON GUI mode is used
+        //clonedTree.add(clonedTree.getArray()[0], new RemoteThreadsListenerTestElement());
+
+       /* List<JMeterEngine> engines = new ArrayList<>();
+
+        JMeterEngine engine = new StandardJMeterEngine();
+        *//*clonedTree.add(clonedTree.getArray()[0], new JMeter.ListenToTest(
+                org.apache.jmeter.JMeter.ListenToTest.RunMode.LOCAL, false, reportGenerator));
+        *//*
+        engine.configure(clonedTree);
+        long now=System.currentTimeMillis();
+        log.info("Starting standalone test @ "+new Date(now)+" ("+now+")");
+        engines.add(engine);
+        engine.runTest();*/
+
+        //reportGenerator.generate();
+
+        //startUdpDdaemon(engines);
+
+
+
+        //是否debug模式运行
+        String debugReportId = "";
+        String runMode = StringUtils.isEmpty(debugReportId) ? ApiRunMode.RUN.name() : ApiRunMode.DEBUG.name();
+
+        String testId = resultHogwartsTestCase.getId().toString();
+
+        JMeterUtil.addBackendListener(testId, debugReportId, runMode, clonedTree, null);
+
+        LocalRunner runner = new LocalRunner(clonedTree);
+        runner.run(testId);
+
+        return ResultDto.success("成功");
+    }
+
+    /**
+     * 执行测试用例
+     *
+     * @param createUserId
+     * @param caseId
+     * @return
+     */
+    @Override
+    public ResultDto runCase2(Integer createUserId, Integer caseId) throws Exception {
+        init();
+        if(Objects.isNull(caseId)){
+            return ResultDto.fail("用例id为空");
+        }
+
+        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
+        queryHogwartsTestCase.setCreateUserId(createUserId);
+        queryHogwartsTestCase.setId(caseId);
+        log.info("=====执行测试用例-查库入参====："+ JSONObject.toJSONString(queryHogwartsTestCase));
+        HogwartsTestCase resultHogwartsTestCase = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
+
+        if(Objects.isNull(resultHogwartsTestCase)){
+            return ResultDto.fail("用例数据未查到");
+        }
+
+        String caseData = resultHogwartsTestCase.getCaseData();
+
+        if(StringUtils.isEmpty(caseData)){
+            return ResultDto.fail("用例测试命令未查到");
+        }
+
+        InputStream is = StreamUtil.getStrToStream(caseData);
+        Object scriptWrapper = SaveService.loadElement(is);
         HashTree testPlan = JMeterUtil.getHashTree(scriptWrapper);
         JMeterVars.addJSR223PostProcessor(testPlan);
 
@@ -276,30 +386,62 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
         String testId = resultHogwartsTestCase.getId().toString();
 
-        JMeterUtil.addBackendListener(testId, debugReportId, runMode, testPlan);
+        JMeterUtil.addBackendListener(testId, debugReportId, runMode, testPlan, null);
 
         LocalRunner runner = new LocalRunner(testPlan);
         runner.run(testId);
-        HogwartsTestHis hogwartsTestHis = new HogwartsTestHis();
 
-        hogwartsTestHis.setCreateUserId(createUserId);
-        hogwartsTestHis.setCaseId(caseId);
-        hogwartsTestHis.setStatus(2);
+        return ResultDto.success("成功");
+    }
 
-        ResultDto<HogwartsTestHis>  hogwartsTestHisResultDto =
-                hogwartsTestHisService.save(hogwartsTestHis);
-
-        if(hogwartsTestHisResultDto.getResultCode()==0){
-            return hogwartsTestHisResultDto;
+    /**
+     * 执行测试用例
+     *
+     *  允许用户录入application名称和需要替换的值(key-value数组形式)，其中key以${}形式
+     *
+     * @param createUserId
+     * @param caseId
+     * @return
+     */
+    @Override
+    public ResultDto runCase3(Integer createUserId, Integer caseId) throws Exception {
+        init();
+        if(Objects.isNull(caseId)){
+            return ResultDto.fail("用例id为空");
         }
 
-        HogwartsTestHis resultHogwartsTestHis = hogwartsTestHisResultDto.getData();
+        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
+        queryHogwartsTestCase.setCreateUserId(createUserId);
+        queryHogwartsTestCase.setId(caseId);
+        log.info("=====执行测试用例-查库入参====："+ JSONObject.toJSONString(queryHogwartsTestCase));
+        HogwartsTestCase resultHogwartsTestCase = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
 
-        /*RunCaseDto runCaseDto = new RunCaseDto();
-        runCaseDto.setHogwartsTestHis(resultHogwartsTestHis);
-        runCaseDto.setHogwartsTestCommand(caseData);
+        if(Objects.isNull(resultHogwartsTestCase)){
+            return ResultDto.fail("用例数据未查到");
+        }
 
-        commandUtil.run(runCaseDto);*/
+        String caseData = resultHogwartsTestCase.getCaseData();
+
+        if(StringUtils.isEmpty(caseData)){
+            return ResultDto.fail("用例测试命令未查到");
+        }
+
+        InputStream is = StreamUtil.getStrToStream(caseData);
+        Object scriptWrapper = SaveService.loadElement(is);
+        HashTree testPlan = JMeterUtil.getHashTree(scriptWrapper);
+        JMeterVars.addJSR223PostProcessor(testPlan);
+
+        //是否debug模式运行
+        String debugReportId = "";
+        String runMode = StringUtils.isEmpty(debugReportId) ? ApiRunMode.RUN.name() : ApiRunMode.DEBUG.name();
+
+        String testId = resultHogwartsTestCase.getId().toString();
+
+        JMeterUtil.addBackendListener(testId, debugReportId, runMode, testPlan, null);
+
+        LocalRunner runner = new LocalRunner(testPlan);
+        runner.run(testId);
+
 
         return ResultDto.success("成功");
     }

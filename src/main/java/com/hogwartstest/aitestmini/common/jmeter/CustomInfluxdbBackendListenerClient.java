@@ -1,22 +1,13 @@
 package com.hogwartstest.aitestmini.common.jmeter;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.apache.jmeter.protocol.http.sampler.HTTPSampleResult;
-import org.apache.jmeter.report.config.ConfigurationException;
-import org.apache.jmeter.report.dashboard.GenerationException;
-import org.apache.jmeter.report.dashboard.ReportGenerator;
-import org.apache.jmeter.report.processor.SampleContext;
-import org.apache.jmeter.reporters.ResultCollector;
-import org.apache.jmeter.reporters.Summariser;
-import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
 import org.apache.jmeter.visualizers.backend.BackendListenerContext;
-import org.apache.jorphan.util.JOrphanUtils;
+import org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +16,7 @@ import java.util.List;
  *@Author tlibn
  *@Date 2021/8/25 16:47
  **/
-public class CustomBackendListenerClient extends AbstractBackendListenerClient {
+public class CustomInfluxdbBackendListenerClient extends InfluxdbBackendListenerClient {
 
     private final List<SampleResult> queue = new ArrayList<>();
 

@@ -55,4 +55,20 @@ public interface HogwartsTestCaseService {
 	 */
 	ResultDto runCase(Integer createUserId, Integer caseId) throws Exception;
 
+	/**
+	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+	 * @param createUserId
+	 * @param caseId
+	 * @return
+	 */
+	ResultDto runCase2(Integer createUserId, Integer caseId) throws Exception;
+
+	/**
+	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+	 * @param createUserId
+	 * @param caseId
+	 * @return
+	 */
+	ResultDto runCase3(Integer createUserId, Integer caseId) throws Exception;
+
 }
