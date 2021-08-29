@@ -4,9 +4,8 @@ import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
-
-import java.io.IOException;
 
 public interface HogwartsTestCaseService {
 
@@ -65,10 +64,9 @@ public interface HogwartsTestCaseService {
 
 	/**
 	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
-	 * @param createUserId
-	 * @param caseId
+	 * @param runCaseDto
 	 * @return
 	 */
-	ResultDto runCase3(Integer createUserId, Integer caseId) throws Exception;
+	ResultDto runCase3(RunCaseDto runCaseDto) throws Exception;
 
 }

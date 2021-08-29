@@ -1,16 +1,12 @@
 package com.hogwartstest.aitestmini.util;
 
-import com.alibaba.fastjson.JSONObject;
-import com.hogwartstest.aitestmini.common.jmeter.CustomBackendListenerClient;
-import com.hogwartstest.aitestmini.common.jmeter.CustomInfluxdbBackendListenerClient;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.report.dashboard.ReportGenerator;
 import org.apache.jmeter.visualizers.backend.BackendListener;
 import org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient;
 import org.apache.jorphan.collections.HashTree;
 
-import java.io.File;
 import java.lang.reflect.Field;
 
 /**
@@ -26,14 +22,13 @@ public class JMeterUtil {
     }
 
     public static void addBackendListener(String testId, String debugReportId
-            , String runMode, HashTree testPlan, ReportGenerator reportGenerator) {
+            , String runMode, HashTree testPlan, RunCaseDto runCaseDto) {
         BackendListener backendListener = new BackendListener();
         backendListener.setName(testId);
         Arguments arguments = new Arguments();
-        arguments.addArgument(CustomBackendListenerClient.TEST_ID, testId);
         arguments.addArgument("influxdbMetricsSender", "org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender");
         arguments.addArgument("influxdbUrl", "http://stuq.ceshiren.com:18086/write?db=jmeter");
-        arguments.addArgument("application", "aitest1-"+testId);
+        arguments.addArgument("application", runCaseDto.getApplication());
         arguments.addArgument("measurement", "jmeter");
         arguments.addArgument("summaryOnly", "false");
         arguments.addArgument("samplersRegex", ".*");
@@ -48,7 +43,7 @@ public class JMeterUtil {
             arguments.addArgument("debugReportId", debugReportId);
         }
         backendListener.setArguments(arguments);
-        backendListener.setClassname(CustomBackendListenerClient.class.getCanonicalName());
+        backendListener.setClassname(InfluxdbBackendListenerClient.class.getCanonicalName());
         testPlan.add(testPlan.getArray()[0], backendListener);
     }
 

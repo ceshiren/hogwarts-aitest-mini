@@ -11,6 +11,8 @@ import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseParamsDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
 import com.hogwartstest.aitestmini.util.JMeterUtil;
@@ -77,25 +79,6 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
             return jmeterProperties.getHome();
         }
     }
-
-    /*//初始化jmeter属性配置
-    private void initJMeterProperties() {
-        if (!StringUtils.isEmpty(JMeterUtils.getJMeterProperties())){
-            return;
-        }
-        try {
-            ClassPathResource classPathResource = new ClassPathResource("/jmeter/jmeter.properties");
-            InputStream inputStream = classPathResource.getInputStream();
-            File tempFile = FileUtil.createTempFile(null);
-            FileUtil.writeFromStream(inputStream,tempFile);
-            //这里面loadJMeterProperties方法必须写成临时文件这样的形式，否则会获取不到jmeter.properties
-            JMeterUtils.loadJMeterProperties(tempFile.getAbsolutePath());
-            JMeterUtils.setJMeterHome(classPathResource.getPath());
-            JMeterUtils.setLocale(LocaleContextHolder.getLocale());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
 
     /**
@@ -399,13 +382,16 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
      *
      *  允许用户录入application名称和需要替换的值(key-value数组形式)，其中key以${}形式
      *
-     * @param createUserId
-     * @param caseId
+     * @param runCaseDto
      * @return
      */
     @Override
-    public ResultDto runCase3(Integer createUserId, Integer caseId) throws Exception {
+    public ResultDto runCase3(RunCaseDto runCaseDto) throws Exception {
         init();
+
+        Integer createUserId = runCaseDto.getCreateUserId();
+        Integer caseId = runCaseDto.getCaseId();
+
         if(Objects.isNull(caseId)){
             return ResultDto.fail("用例id为空");
         }
@@ -426,6 +412,10 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
             return ResultDto.fail("用例测试命令未查到");
         }
 
+        List<RunCaseParamsDto> params = runCaseDto.getParams();
+
+        caseData = parseJmeterParams(caseData, params);
+
         InputStream is = StreamUtil.getStrToStream(caseData);
         Object scriptWrapper = SaveService.loadElement(is);
         HashTree testPlan = JMeterUtil.getHashTree(scriptWrapper);
@@ -437,13 +427,47 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
         String testId = resultHogwartsTestCase.getId().toString();
 
-        JMeterUtil.addBackendListener(testId, debugReportId, runMode, testPlan, null);
+        JMeterUtil.addBackendListener(testId, debugReportId, runMode, testPlan, runCaseDto);
 
         LocalRunner runner = new LocalRunner(testPlan);
         runner.run(testId);
 
 
         return ResultDto.success("成功");
+    }
+
+    /**
+     *  动态解析jmeter参数
+     * @param caseData
+     * @param params
+     * @return
+     */
+    private String parseJmeterParams(String caseData, List<RunCaseParamsDto> params) {
+        if(Objects.nonNull(params)){
+
+            for (RunCaseParamsDto runCaseParamsDto:params) {
+
+                String key = runCaseParamsDto.getKey();
+
+                if(Objects.isNull(key)){
+                    continue;
+                }
+                StringBuilder keyStr = new StringBuilder();
+                if(!key.startsWith("${")){
+                    keyStr.append("${");
+                }
+                keyStr.append(key);
+                if(!key.endsWith("}")){
+                    keyStr.append("}");
+                }
+
+                String value = runCaseParamsDto.getValue();
+                caseData = caseData.replace(keyStr.toString(),value);
+
+            }
+
+        }
+        return caseData;
     }
 
 }

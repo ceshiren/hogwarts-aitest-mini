@@ -7,6 +7,7 @@ import com.hogwartstest.aitestmini.dto.PageTableRequest;
 import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.TokenDto;
@@ -17,7 +18,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -226,16 +226,24 @@ public class HogwartsTestCaseController {
 
     /**
      *
-     * @param caseId 测试用例id
+     * @param runCaseDto
      * @return
      */
     @ApiOperation(value = "执行测试用例")
-    @PostMapping("run/{caseId}")
-    public ResultDto getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) throws Exception {
-        log.info("=====执行测试用例-请求入参====："+ caseId);
+    @PostMapping("run")
+    public ResultDto getCaseDataById(HttpServletRequest request,@RequestBody RunCaseDto runCaseDto) throws Exception {
+        log.info("=====执行测试用例-请求入参====："+ JSONObject.toJSONString(runCaseDto));
+
+        if(Objects.isNull(runCaseDto)){
+            return ResultDto.fail("执行测试用例时未传参数");
+        }
+        if(Objects.isNull(runCaseDto.getCaseId())){
+            return ResultDto.fail("执行测试用例时未传用例id");
+        }
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        return hogwartsTestCaseService.runCase3(tokenDto.getUserId(), caseId);
+        runCaseDto.setCreateUserId(tokenDto.getUserId());
+        return hogwartsTestCaseService.runCase3(runCaseDto);
     }
 
 
