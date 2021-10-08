@@ -254,7 +254,6 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         LocalRunner runner = new LocalRunner(testPlan);
         runner.run(testId);
 
-
         return ResultDto.success("成功");
     }
 

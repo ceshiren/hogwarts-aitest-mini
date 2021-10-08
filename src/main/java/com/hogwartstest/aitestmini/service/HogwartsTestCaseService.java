@@ -47,7 +47,7 @@ public interface HogwartsTestCaseService {
 	ResultDto<PageTableResponse<HogwartsTestCase>> list(PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest);
 
 	/**
-	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+	 *  运行jmeter测试用例
 	 * @param runCaseDto
 	 * @return
 	 */

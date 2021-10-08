@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+//不推荐这样做，不然服务会有状态，无法横向扩展
 public class MessageCache {
     public static Map<String, ReportCounter> cache = new HashMap();
 
