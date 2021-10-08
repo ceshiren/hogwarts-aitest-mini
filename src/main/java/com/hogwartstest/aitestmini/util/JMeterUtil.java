@@ -27,9 +27,13 @@ public class JMeterUtil {
         backendListener.setName(testId);
         Arguments arguments = new Arguments();
         arguments.addArgument("influxdbMetricsSender", "org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender");
-        arguments.addArgument("influxdbUrl", "http://stuq.ceshiren.com:18086/write?db=jmeter");
+        //InfluxDB服务器
+        arguments.addArgument("influxdbUrl", "http://39.107.221.71:8086/write?db=jmeter");
+        //InfluxDB 服务器
         arguments.addArgument("application", runCaseDto.getApplication());
+        //InfluxDB 服务器
         arguments.addArgument("measurement", "jmeter");
+
         arguments.addArgument("summaryOnly", "false");
         arguments.addArgument("samplersRegex", ".*");
         arguments.addArgument("percentiles", "99;95;90");
