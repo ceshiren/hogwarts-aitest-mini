@@ -6,6 +6,7 @@ import lombok.Data;
  *@Author tlibn
  *@Date 2021/8/25 16:56
  **/
+@Deprecated
 @Data
 public class JMeterRequestResult {
 

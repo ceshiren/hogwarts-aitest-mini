@@ -16,6 +16,7 @@ import java.util.List;
  *@Author tlibn
  *@Date 2021/8/25 16:47
  **/
+@Deprecated
 public class CustomInfluxdbBackendListenerClient extends InfluxdbBackendListenerClient {
 
     private final List<SampleResult> queue = new ArrayList<>();

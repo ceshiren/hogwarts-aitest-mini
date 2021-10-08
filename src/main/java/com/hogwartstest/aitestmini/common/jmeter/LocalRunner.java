@@ -22,22 +22,8 @@ public class LocalRunner {
         engine.configure(jmxTree);
         try {
             engine.runTest();
-            //不推荐这样做，不然服务会有状态，无法横向扩展
-            MessageCache.runningEngine.put(report, engine);
         } catch (JMeterEngineException e) {
             engine.stopTest(true);
-        }
-    }
-
-    public void stop(String report) {
-        try {
-            JMeterEngine engine = MessageCache.runningEngine.get(report);
-            if (engine != null) {
-                engine.stopTest();
-                MessageCache.runningEngine.remove(report);
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
         }
     }
 }
