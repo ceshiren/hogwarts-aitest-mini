@@ -42,7 +42,6 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     @Resource
     private JmeterProperties jmeterProperties;
 
-    @PostConstruct
     public void init() {
         String JMETER_HOME = getJmeterHome();
 

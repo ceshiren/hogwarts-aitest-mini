@@ -29,8 +29,3 @@ logging:
 map:
   local:
     env: 开发环境
-
-jmeter:
-  home: /opt/jmeter
-  result:
-    path: G:/ceba/jmeter_install_dir/demo/

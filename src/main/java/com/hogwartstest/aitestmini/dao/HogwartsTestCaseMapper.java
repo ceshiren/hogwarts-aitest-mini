@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface HogwartsTestCaseMapper extends MySqlExtensionMapper<HogwartsTestCase> {
 
-    List<HogwartsTestCase> getByIdList(@Param("createUserId") Integer createUserId, @Param("list") List<Integer> list);
-
     /**
      * 统计总数
      * @param params
