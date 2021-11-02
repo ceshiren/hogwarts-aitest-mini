@@ -12,6 +12,7 @@ import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.service.HogwartsTestUserService;
 import com.hogwartstest.aitestmini.util.CopyUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class HogwartsTestUserController {
      * @param addUserDto
      * @return
      */
+    @ApiImplicitParam(name = "token", value = "无需token值", required = false, dataType = "String",paramType="header")
     @ApiOperation(value = "用户注册", notes="仅用于测试用户")
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResultDto<HogwartsTestUser> save(@RequestBody AddUserDto addUserDto){
@@ -74,6 +76,7 @@ public class HogwartsTestUserController {
         return resultDto;
     }
 
+    @ApiImplicitParam(name = "token", value = "无需token值", required = false,  dataType = "String",paramType="header")
     @ApiOperation(value = "登录接口")
     @PostMapping("/login")
     public ResultDto<Token> login(@RequestBody LoginUserDto loginUserDto) {
