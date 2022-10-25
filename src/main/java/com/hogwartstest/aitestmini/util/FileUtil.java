@@ -1,7 +1,6 @@
 package com.hogwartstest.aitestmini.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -56,16 +55,6 @@ public class FileUtil {
 		}
 
 		return false;
-	}
-
-	public static String fileMd5(InputStream inputStream) {
-		try {
-			return DigestUtils.md5Hex(inputStream);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	public static String getPath() {

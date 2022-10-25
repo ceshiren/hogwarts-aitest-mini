@@ -18,7 +18,5 @@ public class AddUserDto extends BaseDto {
     private String userName;
     @ApiModelProperty(value="密码",required=true)
     private String password;
-    @ApiModelProperty(value="邮箱",required=true)
-    private String email;
 
 }

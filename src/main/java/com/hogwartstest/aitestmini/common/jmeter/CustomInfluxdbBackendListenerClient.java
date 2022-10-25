@@ -1,6 +1,5 @@
 package com.hogwartstest.aitestmini.common.jmeter;
 
-import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.apache.jmeter.protocol.http.sampler.HTTPSampleResult;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
@@ -56,7 +55,7 @@ public class CustomInfluxdbBackendListenerClient extends InfluxdbBackendListener
         generator.generate();*/
 
         //处理结果集中的数据并封装至JMeterRequestResult对象中
-        List<JMeterRequestResult> jMeterRequestResults = Lists.newArrayList();
+        List<JMeterRequestResult> jMeterRequestResults = new ArrayList<>();
         String testId = context.getParameter("testId");
         queue.stream().forEach(result -> {
             setRequestResult(result, jMeterRequestResults);

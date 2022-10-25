@@ -1,6 +1,5 @@
 package com.hogwartstest.aitestmini.common.jmeter;
 
-import io.github.ningyu.jmeter.plugin.dubbo.sample.DubboSample;
 import org.apache.jmeter.extractor.RegexExtractor;
 import org.apache.jmeter.extractor.XPath2Extractor;
 import org.apache.jmeter.extractor.json.jsonpath.JSONPostProcessor;
@@ -23,7 +22,7 @@ public class JMeterVars {
     public static void addJSR223PostProcessor(HashTree tree) {
         for (Object key : tree.keySet()) {
             HashTree node = tree.get(key);
-            if (key instanceof HTTPSamplerProxy || key instanceof DubboSample || key instanceof JDBCSampler) {
+            if (key instanceof HTTPSamplerProxy || key instanceof JDBCSampler) {
                 StringJoiner extract = new StringJoiner(";");
                 for (Object child : node.keySet()) {
                     if (child instanceof RegexExtractor) {
