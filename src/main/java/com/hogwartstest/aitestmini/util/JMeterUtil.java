@@ -28,7 +28,7 @@ public class JMeterUtil {
         Arguments arguments = new Arguments();
         arguments.addArgument("influxdbMetricsSender", "org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender");
         //InfluxDB服务器
-        arguments.addArgument("influxdbUrl", "http://39.107.221.71:8086/write?db=jmeter");
+        arguments.addArgument("influxdbUrl", "http://10.1.1.4:8086/write?db=jmeter");
         //InfluxDB 服务器
         arguments.addArgument("application", runCaseDto.getApplication());
         //InfluxDB 服务器
