@@ -3,10 +3,7 @@ package com.hogwartstest.aitestmini.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.TokenDb;
 import com.hogwartstest.aitestmini.constants.UserConstants;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
-import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.ResultDto;
@@ -26,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -198,29 +196,16 @@ public class HogwartsTestCaseController {
 
     /**
      *
-     * @param pageTableRequest
+     * @param request
      * @return
      */
     @ApiOperation(value = "列表查询")
     @GetMapping("/list")
-    public ResultDto<PageTableResponse<HogwartsTestCase>> list(HttpServletRequest request, PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest){
-
-        log.info("测试用例列表查询-入参= "+ JSONObject.toJSONString(pageTableRequest));
-
-        if(Objects.isNull(pageTableRequest)){
-            return ResultDto.success("列表查询参数不能为空");
-        }
+    public ResultDto<List<HogwartsTestCase>> list(HttpServletRequest request){
 
         TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        QueryHogwartsTestCaseListDto params = pageTableRequest.getParams();
 
-        if(Objects.isNull(params)){
-            params = new QueryHogwartsTestCaseListDto();
-        }
-        params.setCreateUserId(tokenDto.getUserId());
-        pageTableRequest.setParams(params);
-
-        ResultDto<PageTableResponse<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list(pageTableRequest);
+        ResultDto<List<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list(tokenDto.getUserId());
         return responseResultDto;
     }
 

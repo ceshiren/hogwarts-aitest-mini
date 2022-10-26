@@ -1,11 +1,10 @@
 package com.hogwartstest.aitestmini.service;
 
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
+
+import java.util.List;
 
 public interface HogwartsTestCaseService {
 
@@ -41,10 +40,10 @@ public interface HogwartsTestCaseService {
 
 	/**
 	 *  查询Jenkins信息列表
-	 * @param pageTableRequest
+	 * @param createUserId
 	 * @return
 	 */
-	ResultDto<PageTableResponse<HogwartsTestCase>> list(PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest);
+	ResultDto<List<HogwartsTestCase>> list(Integer createUserId);
 
 	/**
 	 *  运行jmeter测试用例

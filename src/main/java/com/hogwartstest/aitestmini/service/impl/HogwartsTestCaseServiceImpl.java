@@ -7,10 +7,7 @@ import com.hogwartstest.aitestmini.common.jmeter.JmeterProperties;
 import com.hogwartstest.aitestmini.common.jmeter.LocalRunner;
 import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.dao.HogwartsTestCaseMapper;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.dto.testcase.RunCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.RunCaseParamsDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
@@ -26,7 +23,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.InputStream;
@@ -175,27 +171,18 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     /**
      * 查询Jenkins信息列表
      *
-     * @param pageTableRequest
+     * @param createUserId
      * @return
      */
     @Override
-    public ResultDto<PageTableResponse<HogwartsTestCase>> list(PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest) {
+    public ResultDto<List<HogwartsTestCase>> list(Integer createUserId) {
 
-        QueryHogwartsTestCaseListDto params = pageTableRequest.getParams();
-        Integer pageNum = pageTableRequest.getPageNum();
-        Integer pageSize = pageTableRequest.getPageSize();
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+        hogwartsTestCase.setCreateUserId(createUserId);
+        hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
+        List<HogwartsTestCase> hogwartsTestJenkinsList = hogwartsTestCaseMapper.select(hogwartsTestCase);
 
-        //总数
-        Integer recordsTotal =  hogwartsTestCaseMapper.count(params);
-
-        //分页查询数据
-        List<HogwartsTestCase> hogwartsTestJenkinsList = hogwartsTestCaseMapper.list(params, (pageNum - 1) * pageSize, pageSize);
-
-        PageTableResponse<HogwartsTestCase> hogwartsTestJenkinsPageTableResponse = new PageTableResponse<>();
-        hogwartsTestJenkinsPageTableResponse.setRecordsTotal(recordsTotal);
-        hogwartsTestJenkinsPageTableResponse.setData(hogwartsTestJenkinsList);
-
-        return ResultDto.success("成功", hogwartsTestJenkinsPageTableResponse);
+        return ResultDto.success("成功", hogwartsTestJenkinsList);
     }
 
     /**
