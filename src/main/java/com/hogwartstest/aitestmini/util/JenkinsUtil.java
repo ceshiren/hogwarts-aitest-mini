@@ -2,8 +2,7 @@ package com.hogwartstest.aitestmini.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.constants.Constants;
-import com.hogwartstest.aitestmini.dto.RequestInfoDto;
-import com.hogwartstest.aitestmini.entity.HogwartsTestTask;
+import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -25,8 +24,8 @@ public class JenkinsUtil {
      * @return
      */
 
-    public static String getStartTestJobName(Integer createUserId){
-        String jobName = "hogwarts_test_mini_start_test_"+createUserId;
+    public static String getStartTestJobName(Integer caseId){
+        String jobName = "hogwarts_test_mini_"+caseId;
         return jobName;
     }
 
@@ -43,20 +42,18 @@ public class JenkinsUtil {
         return jobSign;
     }
 
-    public static StringBuilder getUpdateTaskStatusUrl(RequestInfoDto requestInfoDto, HogwartsTestTask hogwartsTestTask) {
+    public static StringBuilder getUpdateTaskStatusUrl(String baseUrl, HogwartsTestCase hogwartsTestCase) {
 
         StringBuilder updateStatusUrl = new StringBuilder();
 
         updateStatusUrl.append("curl -X PUT ");
-        updateStatusUrl.append("\""+requestInfoDto.getBaseUrl() + "/task/status \" ");
+        updateStatusUrl.append("\""+baseUrl + "/testCase/status \" ");
         updateStatusUrl.append("-H \"Content-Type: application/json \" ");
-        updateStatusUrl.append("-H \"token: "+requestInfoDto.getToken()+"\" ");
         updateStatusUrl.append("-d ");
         JSONObject json = new JSONObject();
 
-        json.put("taskId",hogwartsTestTask.getId());
+        json.put("caseId",hogwartsTestCase.getId());
         json.put("status", Constants.STATUS_THREE);
-        json.put("buildUrl","${BUILD_URL}");
 
         updateStatusUrl.append("'"+json.toJSONString()+"'");
 

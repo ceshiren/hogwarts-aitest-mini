@@ -1,18 +1,12 @@
 package com.hogwartstest.aitestmini.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hogwartstest.aitestmini.common.TokenDb;
-import com.hogwartstest.aitestmini.constants.UserConstants;
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
+import com.hogwartstest.aitestmini.dto.*;
+import com.hogwartstest.aitestmini.dto.testcase.StartTestDto;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
-import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
-import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
-import com.hogwartstest.aitestmini.util.CopyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +17,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -41,9 +35,6 @@ public class HogwartsTestCaseController {
     @Autowired
     private HogwartsTestCaseService hogwartsTestCaseService;
 
-    @Autowired
-    private TokenDb tokenDb;
-
     /**
      *
      * @param addHogwartsTestCaseDto
@@ -51,7 +42,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
     @PostMapping("text")
-    public ResultDto saveText(HttpServletRequest request, @RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
+    public ResultDto saveText(@RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
 
         log.info("=====新增文本测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
 
@@ -68,10 +59,7 @@ public class HogwartsTestCaseController {
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
 
-        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
-        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
+        BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
 
         ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
         return resultDto;
@@ -84,7 +72,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
     @PostMapping("file")
-    public ResultDto saveFile(HttpServletRequest request, @RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
+    public ResultDto saveFile(@RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
 
         log.info("=====新增文件测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
 
@@ -104,11 +92,8 @@ public class HogwartsTestCaseController {
         String caseData = IOUtils.toString(inputStream,"UTF-8");
         inputStream.close();
 
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
-        hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
-        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
-        CopyUtil.copyPropertiesCglib(addHogwartsTestCaseDto,hogwartsTestCase);
+        BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
         //文件类型时需要将文件中的数据进行赋值
         hogwartsTestCase.setCaseData(caseData);
 
@@ -124,7 +109,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "修改测试用例")
     @PutMapping
-    public ResultDto<HogwartsTestCase> update(HttpServletRequest request, @RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
+    public ResultDto<HogwartsTestCase> update(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
 
         log.info("修改测试用例-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseDto));
 
@@ -144,11 +129,7 @@ public class HogwartsTestCaseController {
         }
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
-        //BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
-        CopyUtil.copyPropertiesCglib(updateHogwartsTestCaseDto,hogwartsTestCase);
-
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        hogwartsTestCase.setCreateUserId(tokenDto.getUserId());
+        BeanUtils.copyProperties(updateHogwartsTestCaseDto, hogwartsTestCase);
 
         ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.update(hogwartsTestCase);
         return resultDto;
@@ -161,7 +142,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "根据caseId查询")
     @GetMapping("/{caseId}")
-    public ResultDto<HogwartsTestCase> getById(HttpServletRequest request, @PathVariable Integer caseId){
+    public ResultDto<HogwartsTestCase> getById(@PathVariable Integer caseId){
 
         log.info("根据caseId查询-入参= "+ caseId);
 
@@ -169,9 +150,8 @@ public class HogwartsTestCaseController {
             return ResultDto.success("caseId不能为空");
         }
 
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-
-        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.getById(caseId, tokenDto.getUserId());
+        ///todo
+        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.getById(caseId);
         return resultDto;
     }
 
@@ -182,7 +162,7 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "根据caseId删除")
     @DeleteMapping("/{caseId}")
-    public ResultDto<HogwartsTestCase> delete(HttpServletRequest request, @PathVariable Integer caseId){
+    public ResultDto<HogwartsTestCase> delete(@PathVariable Integer caseId){
 
         log.info("根据caseId删除-入参= "+ caseId);
 
@@ -190,37 +170,20 @@ public class HogwartsTestCaseController {
             return ResultDto.success("caseId不能为空");
         }
 
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-
-        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.delete(caseId, tokenDto.getUserId());
+        ///todo
+        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.delete(caseId);
         return resultDto;
     }
 
     /**
      *
-     * @param pageTableRequest
      * @return
      */
     @ApiOperation(value = "列表查询")
     @GetMapping("/list")
-    public ResultDto<PageTableResponse<HogwartsTestCase>> list(HttpServletRequest request, PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest){
+    public ResultDto<List<HogwartsTestCase>> list(){
 
-        log.info("测试用例列表查询-入参= "+ JSONObject.toJSONString(pageTableRequest));
-
-        if(Objects.isNull(pageTableRequest)){
-            return ResultDto.success("列表查询参数不能为空");
-        }
-
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        QueryHogwartsTestCaseListDto params = pageTableRequest.getParams();
-
-        if(Objects.isNull(params)){
-            params = new QueryHogwartsTestCaseListDto();
-        }
-        params.setCreateUserId(tokenDto.getUserId());
-        pageTableRequest.setParams(params);
-
-        ResultDto<PageTableResponse<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list(pageTableRequest);
+        ResultDto<List<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list();
         return responseResultDto;
     }
 
@@ -232,13 +195,74 @@ public class HogwartsTestCaseController {
      */
     @ApiOperation(value = "根据测试用例id查询")
     @GetMapping("data/{caseId}")
-    public String getCaseDataById(HttpServletRequest request, @PathVariable Integer caseId) {
+    public String getCaseDataById(@PathVariable Integer caseId) {
         log.info("=====根据用户id和caseId查询case原始数据-请求入参====："+ caseId);
 
-        TokenDto tokenDto = tokenDb.getTokenDto(request.getHeader(UserConstants.LOGIN_TOKEN));
-        String caseData = hogwartsTestCaseService.getCaseDataById(tokenDto.getUserId(), caseId);
+        ///todo
+        String caseData = hogwartsTestCaseService.getCaseDataById(caseId);
         log.info("=====根据用户id和caseId查询case原始数据-请求出参====："+ caseData);
         return caseData;
+    }
+
+
+    /**
+     *
+     * @param updateHogwartsTestCaseDto
+     * @return
+     */
+    @ApiOperation(value = "修改测试任务状态")
+    @PutMapping("status")
+    public ResultDto<HogwartsTestCase> updateStatus(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
+
+        log.info("修改测试用例状态-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseDto));
+
+        if(Objects.isNull(updateHogwartsTestCaseDto)){
+            return ResultDto.success("修改测试用例状态信息不能为空");
+        }
+
+        Integer caseId = updateHogwartsTestCaseDto.getId();
+        Integer status = updateHogwartsTestCaseDto.getStatus();
+
+        if(Objects.isNull(caseId)){
+            return ResultDto.success("任务id不能为空");
+        }
+
+        if(StringUtils.isEmpty(status)){
+            return ResultDto.success("任务状态码不能为空");
+        }
+
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+
+        hogwartsTestCase.setId(caseId);
+        hogwartsTestCase.setStatus(status);
+
+
+        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.updateStatus(hogwartsTestCase);
+        return resultDto;
+    }
+
+    /**
+     * 开始测试接口
+     * @param startTestDto
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("start")
+    @ApiOperation(value = "开始测试", notes = "开始测试-说明", httpMethod = "POST", response = ResultDto.class)
+    public ResultDto testStart(@RequestBody StartTestDto startTestDto) throws Exception {
+        log.info("=====开始测试-请求入参====："+ JSONObject.toJSONString(startTestDto));
+
+        if(Objects.isNull(startTestDto)){
+            return ResultDto.fail("开始测试请求不能为空");
+        }
+        if(Objects.isNull(startTestDto.getCaseId())){
+            return ResultDto.fail("用例id不能为空");
+        }
+
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+        hogwartsTestCase.setId(startTestDto.getCaseId());
+
+        return hogwartsTestCaseService.startTask(hogwartsTestCase);
     }
 
 

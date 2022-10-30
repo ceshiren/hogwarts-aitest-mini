@@ -1,10 +1,10 @@
 package com.hogwartstest.aitestmini.service;
 
-import com.hogwartstest.aitestmini.dto.PageTableRequest;
-import com.hogwartstest.aitestmini.dto.PageTableResponse;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.testcase.QueryHogwartsTestCaseListDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface HogwartsTestCaseService {
 
@@ -18,10 +18,9 @@ public interface HogwartsTestCaseService {
 	/**
 	 *  删除测试用例信息
 	 * @param caseId
-	 * @param createUserId
 	 * @return
 	 */
-	ResultDto<HogwartsTestCase> delete(Integer caseId,Integer createUserId);
+	ResultDto<HogwartsTestCase> delete(Integer caseId);
 
 	/**
 	 *  修改测试用例信息
@@ -32,25 +31,37 @@ public interface HogwartsTestCaseService {
 
 	/**
 	 *  根据id查询测试用例
-	 * @param jenkinsId
-	 * @param createUserId
-	 * @return
-	 */
-	ResultDto<HogwartsTestCase> getById(Integer caseId,Integer createUserId);
-
-	/**
-	 *  查询Jenkins信息列表
-	 * @param pageTableRequest
-	 * @return
-	 */
-	ResultDto<PageTableResponse<HogwartsTestCase>> list(PageTableRequest<QueryHogwartsTestCaseListDto> pageTableRequest);
-
-	/**
-	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
-	 * @param createUserId
 	 * @param caseId
 	 * @return
 	 */
-	String getCaseDataById(Integer createUserId, Integer caseId);
+	ResultDto<HogwartsTestCase> getById(Integer caseId);
+
+	/**
+	 *  查询列表
+	 * @return
+	 */
+	ResultDto<List<HogwartsTestCase>> list();
+
+	/**
+	 *  根据用户id和caseId查询case原始数据-直接返回字符串，因为会保存为文件
+	 * @param caseId
+	 * @return
+	 */
+	String getCaseDataById(Integer caseId);
+
+
+	/**
+	 *  修改测试任务状态信息
+	 * @param hogwartsTestCase
+	 * @return
+	 */
+	ResultDto<HogwartsTestCase> updateStatus(HogwartsTestCase hogwartsTestCase);
+
+	/**
+	 *  开始执行测试任务信息
+	 * @param hogwartsTestCase
+	 * @return
+	 */
+	ResultDto startTask(HogwartsTestCase hogwartsTestCase) throws IOException;
 
 }

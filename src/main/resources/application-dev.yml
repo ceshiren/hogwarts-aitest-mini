@@ -26,6 +26,18 @@ logging:
     com.hogwartstest.aitestmini.dao: debug #打印sql
 
 
-map:
-  local:
-    env: 开发环境
+jenkins:
+  #Jenkins的baseUrl
+  url: http://stuq.ceshiren.com:8080/
+  #Jenkins的用户名
+  username: hogwarts
+  #Jenkins的密码
+  password: hogwarts123
+  #命令运行的测试用例类型  1 文本 2 文件
+  casetype: 2
+  #测试用例后缀名 如果case为文件时，此处必填
+  casesuffix: yml
+  #测试命令
+  testcommand: hrun
+  #Jenkins回调地址(即平台的baseUrl)
+  callbackurl: http://localhost:8091/

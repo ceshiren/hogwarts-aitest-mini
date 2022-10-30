@@ -40,18 +40,17 @@ public class HogwartsTestCase extends BaseEntityNew {
     private String remark;
 
     /**
+     * 状态 0 无效 1 新建 2 执行中 3 执行完成
+     */
+    @ApiModelProperty(value="状态 0 无效 1 新建 2 执行中 3 执行完成",required=true)
+    private Integer status;
+
+    /**
      * 删除标志 1 未删除 0 已删除
      */
     @Column(name = "del_flag")
     @ApiModelProperty(value="删除标志 1 未删除 0 已删除",required=true)
     private Integer delFlag;
-
-    /**
-     * 创建人id
-     */
-    @Column(name = "create_user_id")
-    @ApiModelProperty(value="创建人id",required=true)
-    private Integer createUserId;
 
     /**
      * 创建时间

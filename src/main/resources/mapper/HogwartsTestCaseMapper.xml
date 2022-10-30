@@ -9,31 +9,11 @@
     <result column="case_data" property="caseData" jdbcType="VARCHAR" />
     <result column="case_name" property="caseName" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
     <result column="del_flag" property="delFlag" jdbcType="TINYINT" />
     <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
-
-  <select id="count" resultType="int">
-    select count(1) from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
-
-    <if test="params.caseName != null and params.caseName != '' ">
-      and htc.case_name like concat('%', #{params.caseName}, '%')
-    </if>
-    and htc.del_flag = 1
-
-  </select>
-
-  <select id="list" resultType="HogwartsTestCase">
-    select * from hogwarts_test_case htc where htc.create_user_id =  #{params.createUserId}
-
-    <if test="params.caseName != null and params.caseName != '' ">
-      and htc.case_name like concat('%', #{params.caseName}, '%')
-    </if>
-    and htc.del_flag = 1
-    order by htc.id desc
-    limit #{pageNum}, #{pageSize}
-  </select>
 
 </mapper>

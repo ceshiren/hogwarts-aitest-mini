@@ -2,12 +2,8 @@ package com.hogwartstest.aitestmini.common.jenkins;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hogwartstest.aitestmini.common.ServiceException;
-import com.hogwartstest.aitestmini.dao.HogwartsTestUserMapper;
 import com.hogwartstest.aitestmini.dto.ResultDto;
-import com.hogwartstest.aitestmini.dto.TokenDto;
 import com.hogwartstest.aitestmini.dto.jenkins.OperateJenkinsJobDto;
-import com.hogwartstest.aitestmini.entity.HogwartsTestJenkins;
-import com.hogwartstest.aitestmini.entity.HogwartsTestUser;
 import com.hogwartstest.aitestmini.util.FileUtil;
 import com.hogwartstest.aitestmini.util.JenkinsUtil;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -15,6 +11,7 @@ import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,9 +24,18 @@ import java.util.*;
 @Slf4j
 public class JenkinsClient {
 
-
-	@Autowired
-	private HogwartsTestUserMapper hogwartsTestUserMapper;
+	@Value("${jenkins.url}")
+	private String jenkinsUrl;
+	@Value("${jenkins.username}")
+	private String jenkinsUserName;
+	@Value("${jenkins.password}")
+	private String jenkinsPassword;
+	@Value("${jenkins.casetype}")
+	private Integer jenkinsCaseType;
+	@Value("${jenkins.casesuffix}")
+	private String jenkinsCaseSuffix;
+	@Value("${jenkins.testcommand}")
+	private String jenkinsTestCommand;
 
 	@Autowired
 	private JenkinsFactory jenkinsServerFactory;
@@ -45,16 +51,10 @@ public class JenkinsClient {
 
 		log.info("operateJenkinsJobDto==  "+ JSONObject.toJSONString(operateJenkinsJobDto));
 
-		HogwartsTestJenkins hogwartsTestJenkins = operateJenkinsJobDto.getHogwartsTestJenkins();
-		TokenDto tokenDto = operateJenkinsJobDto.getTokenDto();
 		Map<String, String> params = operateJenkinsJobDto.getParams();
 
-		HogwartsTestUser queryHogwartsTestUser = new HogwartsTestUser();
-		queryHogwartsTestUser.setId(tokenDto.getUserId());
-		HogwartsTestUser resultHogwartsTestUser = hogwartsTestUserMapper.selectOne(queryHogwartsTestUser);
-
-		//拼接Job名称
-		String jobName = JenkinsUtil.getStartTestJobName(tokenDto.getUserId());
+		///todo 拼接Job名称
+		String jobName = JenkinsUtil.getStartTestJobName(operateJenkinsJobDto.getCaseId());
 		String jobSign = JenkinsUtil.getJobSignByName(jobName);
 
 		log.info("=====拼接Job名称====："+ jobName);
@@ -74,26 +74,13 @@ public class JenkinsClient {
 			return ResultDto.fail("Job配置信息不能为空");
 		}
 
-		//获取根据job类型获取数据库中对应的job名称
-		String dbJobName = resultHogwartsTestUser.getStartTestJobName();
-
-		if(StringUtils.isEmpty(dbJobName)){
-			log.info("=====新建Jenkins执行测试的Job====：");
-
-			createOrUpdateJob(jobName, jobXml, tokenDto.getUserId(), tokenDto.getDefaultJenkinsId(), 1);
-
-            resultHogwartsTestUser.setStartTestJobName(jobName);
-            hogwartsTestUserMapper.updateByPrimaryKeySelective(resultHogwartsTestUser);
-
-		}else {
-			createOrUpdateJob(jobName, jobXml, tokenDto.getUserId(), tokenDto.getDefaultJenkinsId(), 0);
-		}
+		createOrUpdateJob(jobName, jobXml);
 
 		try{
 
-			JenkinsHttpClient jenkinsHttpClient = jenkinsServerFactory.getJenkinsHttpClient(tokenDto.getUserId(), tokenDto.getDefaultJenkinsId());
+			JenkinsHttpClient jenkinsHttpClient = jenkinsServerFactory.getJenkinsHttpClient();
 
-			Job job = getJob(jobName, jenkinsHttpClient, hogwartsTestJenkins.getUrl());
+			Job job = getJob(jobName, jenkinsHttpClient, jenkinsUrl);
 			build(job, params);
 			return ResultDto.success("成功");
 		}catch (Exception e){
@@ -109,27 +96,24 @@ public class JenkinsClient {
 	 *
 	 * @param jobName
 	 * @param jobXml
-	 * @param createUserId
-	 * @param jenkinsId
-	 * @param createJobFlag 1 是 0 否
 	 * @return
 	 */
-	public ResultDto createOrUpdateJob(String jobName, String jobXml, Integer createUserId, Integer jenkinsId, Integer createJobFlag) {
+	public ResultDto createOrUpdateJob(String jobName, String jobXml) {
 
-		JenkinsServer jenkinsServer = jenkinsServerFactory.getJenkinsServer(createUserId, jenkinsId);
+		JenkinsServer jenkinsServer = jenkinsServerFactory.getJenkinsServer();
 
 		try{
 
-			if(Objects.nonNull(createJobFlag)&&createJobFlag==1){
-				jenkinsServer.createJob(null, jobName, jobXml, true);
-			}else {
-				jenkinsServer.updateJob(null,jobName,jobXml,true);
-			}
+			jenkinsServer.updateJob(null,jobName,jobXml,true);
+
 			return ResultDto.success("成功");
 		}catch (Exception e){
-			String tips = PREFIX_TIPS + "创建或更新Jenkins的Job时异常"+e.getMessage();
-			log.error(tips,e);
-			throw new ServiceException(tips);
+			try {
+				jenkinsServer.createJob(null, jobName, jobXml, true);
+			} catch (IOException e1) {
+				return ResultDto.success("创建job失败");
+			}
+			return ResultDto.success("成功");
 		}
 	}
 

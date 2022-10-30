@@ -32,4 +32,10 @@ public class UpdateHogwartsTestCaseDto extends BaseEntityNew {
     @ApiModelProperty(value="测试用例备注",required=true)
     private String remark;
 
+    /**
+     * 备注
+     */
+    @ApiModelProperty(value="状态",required=true)
+    private Integer status;
+
 }

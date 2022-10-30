@@ -1,4 +1,4 @@
-package com.hogwartstest.aitestmini.dto.task;
+package com.hogwartstest.aitestmini.dto.testcase;
 
 import com.hogwartstest.aitestmini.dto.BaseDto;
 import io.swagger.annotations.ApiModel;
@@ -14,14 +14,8 @@ public class StartTestDto extends BaseDto {
     /**
      * ID
      */
-    @ApiModelProperty(value="测试任务id",required=true, example = "112")
+    @ApiModelProperty(value="测试用例id",required=true, example = "112")
     @NotNull
-    private Integer taskId;
-
-    /**
-     * 执行测试的命令脚本
-     */
-    @ApiModelProperty(value="执行测试的命令脚本", example = "mvn test")
-    private String testCommand;
+    private Integer caseId;
 
 }
