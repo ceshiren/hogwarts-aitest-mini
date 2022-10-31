@@ -15,10 +15,6 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class JenkinsUtil {
 
-    public static void main(String[] args) {
-
-    }
-
     /**
      * 获取执行测试的Job名称
      * @return
@@ -27,19 +23,6 @@ public class JenkinsUtil {
     public static String getStartTestJobName(Integer caseId){
         String jobName = "hogwarts_test_mini_"+caseId;
         return jobName;
-    }
-
-    /**
-     * 获取执行测试的Job名称
-     * @return
-     */
-
-    public static String getJobSignByName(String jobName){
-        if(StringUtils.isEmpty(jobName) || !jobName.contains("_")){
-            return "";
-        }
-        String jobSign = jobName.substring(0, jobName.lastIndexOf("_"));
-        return jobSign;
     }
 
     public static StringBuilder getUpdateTaskStatusUrl(String baseUrl, HogwartsTestCase hogwartsTestCase) {

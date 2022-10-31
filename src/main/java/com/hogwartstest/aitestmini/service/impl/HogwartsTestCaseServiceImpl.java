@@ -36,8 +36,6 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     private String jenkinsUserName;
     @Value("${jenkins.password}")
     private String jenkinsPassword;
-    @Value("${jenkins.casetype}")
-    private Integer jenkinsCaseType;
     @Value("${jenkins.casesuffix}")
     private String jenkinsCaseSuffix;
     @Value("${jenkins.testcommand}")
@@ -57,6 +55,8 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         hogwartsTestCase.setCreateTime(new Date());
         hogwartsTestCase.setUpdateTime(new Date());
         hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
+        StringBuilder testCommand = new StringBuilder();
+        makeTestCommand(testCommand, hogwartsTestCase);
 
         hogwartsTestCaseMapper.insertUseGeneratedKeys(hogwartsTestCase);
         return ResultDto.success("成功", hogwartsTestCase);
@@ -184,7 +184,7 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     }
 
     /**
-     * 开始执行测试任务信息
+     * 执行测试
      *
      * @param hogwartsTestCase
      * @return
@@ -208,16 +208,16 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
 
         String testCommandStr =  jenkinsTestCommand;
         if(StringUtils.isEmpty(testCommandStr)){
-            return ResultDto.fail("任务的测试命令不能为空");
+            return ResultDto.fail("测试命令不能为空");
         }
 
-        //更新任务状态
+        //更新状态
         resultHogwartsTestCase.setStatus(Constants.STATUS_TWO);
         hogwartsTestCaseMapper.updateByPrimaryKeySelective(resultHogwartsTestCase);
 
         StringBuilder testCommand = new StringBuilder();
 
-        //添加保存测试任务接口拼装的mvn test 命令
+        //添加保存测试命令
         testCommand.append(testCommandStr);
         testCommand.append(" \n");
 
@@ -232,8 +232,7 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         params.put("updateStatusData",updateStatusUrl.toString());
 
         log.info("=====执行测试Job的构建参数组装====：" +JSONObject.toJSONString(params));
-        log.info("=====执行测试Job的修改任务状态的数据组装====：" +updateStatusUrl);
-
+        log.info("=====执行测试Job的修改用例状态的数据组装====：" +updateStatusUrl);
 
         OperateJenkinsJobDto operateJenkinsJobDto = new OperateJenkinsJobDto();
         operateJenkinsJobDto.setCaseId(resultHogwartsTestCase.getId());
@@ -264,7 +263,7 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
             return ResultDto.fail("测试用例为空");
         }
 
-        //如果任务已经完成，则不重复修改
+        //如果已经完成，则不重复修改
         if(Constants.STATUS_THREE.equals(resultHogwartsTestCase.getStatus())){
             return ResultDto.fail("测试用例已完成，无需修改");
         }
@@ -282,73 +281,45 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     /**
      *
      * @param testCommand
-     * @param testCaseList
      */
-    private void makeTestCommand(StringBuilder testCommand, List<HogwartsTestCase> testCaseList) {
+    private void makeTestCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase) {
 
         //打印测试目录
         testCommand.append("pwd");
         testCommand.append("\n");
 
-        if(Objects.isNull(testCaseList) || testCaseList.size()==0){
-            throw new ServiceException("组装测试命令时，测试用例列表信息为空");
+        if(Objects.isNull(hogwartsTestCase)){
+            throw new ServiceException("组装测试命令时，测试用例信息为空");
         }
 
         String runCommand = jenkinsTestCommand;
-
-        Integer commandRunCaseType = jenkinsCaseType;
         String systemTestCommand = jenkinsTestCommand;
+        String commandRunCaseSuffix = jenkinsCaseSuffix;
 
         if(StringUtils.isEmpty(systemTestCommand)){
             throw new ServiceException("组装测试命令时，运行的测试命令信息为空");
         }
 
-        //默认文本类型
-        if(Objects.isNull(commandRunCaseType)){
-            commandRunCaseType = 1;
-        }
-
-        //文本类型
-        if(commandRunCaseType==1){
-            for (HogwartsTestCase hogwartsTestCase :testCaseList) {
-                //拼装命令前缀
-                testCommand.append(systemTestCommand).append(" ");
-                //拼装测试数据
-                testCommand.append(hogwartsTestCase.getCaseData())
-                        .append("\n");
-            }
-        }
-        //文件类型
-        if(commandRunCaseType==2){
-
-            String commandRunCaseSuffix = jenkinsCaseSuffix;
-
-            if(StringUtils.isEmpty(commandRunCaseSuffix)){
-                throw new ServiceException("组装测试命令且case为文件时，测试用例后缀名不能为空");
-            }
-
-            for (HogwartsTestCase hogwartsTestCase :testCaseList) {
-
-                //拼装下载文件的curl命令
-                makeCurlCommand(testCommand, hogwartsTestCase, commandRunCaseSuffix);
-                testCommand.append("\n");
-                //拼装命令前缀
-                testCommand.append(systemTestCommand).append(" ");
-                //平台测试用例名称
-                testCommand.append(hogwartsTestCase.getCaseName())
-                        //拼装.分隔符
-                        .append(".")
-                        //拼装case文件后缀
-                        .append(commandRunCaseSuffix)
-                        .append(" || true")
-                        .append("\n");
-            }
+        if(StringUtils.isEmpty(commandRunCaseSuffix)){
+            throw new ServiceException("测试用例后缀名不能为空");
         }
 
 
+        //拼装下载文件的curl命令
+        makeCurlCommand(testCommand, hogwartsTestCase, commandRunCaseSuffix);
+        testCommand.append("\n");
+        //拼装命令前缀
+        testCommand.append(systemTestCommand).append(" ");
+        //平台测试用例名称
+        testCommand.append(hogwartsTestCase.getCaseName())
+                //拼装.分隔符
+                .append(".")
+                //拼装case文件后缀
+                .append(commandRunCaseSuffix)
+                .append(" || true")
+                .append("\n");
 
         log.info("testCommand.toString()== "+testCommand.toString() + "  runCommand== " + runCommand);
-
 
         testCommand.append("\n");
     }
@@ -374,9 +345,8 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         testCommand.append(caseName)
                 .append(".")
                 .append(commandRunCaseSuffix)
-                .append(" ${aitestBaseUrl}/testCase/data/")
-                .append(hogwartsTestCase.getId())
-                .append(" -H \"token: ${token}\" ");
+                .append(" ${aitestBaseUrl}/case/data/")
+                .append(hogwartsTestCase.getId());
 
         //本行命令执行失败，继续运行下面的命令行
         testCommand.append(" || true");

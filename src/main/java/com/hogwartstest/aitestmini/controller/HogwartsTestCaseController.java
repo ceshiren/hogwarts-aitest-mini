@@ -29,7 +29,7 @@ import java.util.Objects;
 @Slf4j
 @Api(tags = "霍格沃兹测试学院-测试用例管理")
 @RestController
-@RequestMapping("/testCase")
+@RequestMapping("/case")
 public class HogwartsTestCaseController {
 
     @Autowired
@@ -100,7 +100,6 @@ public class HogwartsTestCaseController {
         ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
         return resultDto;
     }
-
 
     /**
      *
@@ -210,7 +209,7 @@ public class HogwartsTestCaseController {
      * @param updateHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "修改测试任务状态")
+    @ApiOperation(value = "修改测试用例状态")
     @PutMapping("status")
     public ResultDto<HogwartsTestCase> updateStatus(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
 
@@ -224,11 +223,11 @@ public class HogwartsTestCaseController {
         Integer status = updateHogwartsTestCaseDto.getStatus();
 
         if(Objects.isNull(caseId)){
-            return ResultDto.success("任务id不能为空");
+            return ResultDto.success("用例id不能为空");
         }
 
         if(StringUtils.isEmpty(status)){
-            return ResultDto.success("任务状态码不能为空");
+            return ResultDto.success("用例状态码不能为空");
         }
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
@@ -236,19 +235,18 @@ public class HogwartsTestCaseController {
         hogwartsTestCase.setId(caseId);
         hogwartsTestCase.setStatus(status);
 
-
         ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.updateStatus(hogwartsTestCase);
         return resultDto;
     }
 
     /**
-     * 开始测试接口
+     * 执行测试
      * @param startTestDto
      * @return
      * @throws Exception
      */
     @PostMapping("start")
-    @ApiOperation(value = "开始测试", notes = "开始测试-说明", httpMethod = "POST", response = ResultDto.class)
+    @ApiOperation("开始测试")
     public ResultDto testStart(@RequestBody StartTestDto startTestDto) throws Exception {
         log.info("=====开始测试-请求入参====："+ JSONObject.toJSONString(startTestDto));
 

@@ -30,8 +30,6 @@ public class JenkinsClient {
 	private String jenkinsUserName;
 	@Value("${jenkins.password}")
 	private String jenkinsPassword;
-	@Value("${jenkins.casetype}")
-	private Integer jenkinsCaseType;
 	@Value("${jenkins.casesuffix}")
 	private String jenkinsCaseSuffix;
 	@Value("${jenkins.testcommand}")
@@ -55,15 +53,10 @@ public class JenkinsClient {
 
 		///todo 拼接Job名称
 		String jobName = JenkinsUtil.getStartTestJobName(operateJenkinsJobDto.getCaseId());
-		String jobSign = JenkinsUtil.getJobSignByName(jobName);
 
 		log.info("=====拼接Job名称====："+ jobName);
-		log.info("=====拼接Job标识====："+ jobSign);
 
-		if(StringUtils.isEmpty(jobSign)){
-			return ResultDto.fail("Jenkins的Job标识不符合规范");
-		}
-		ClassPathResource classPathResource = new ClassPathResource("jenkinsDir/"+jobSign+".xml");
+		ClassPathResource classPathResource = new ClassPathResource("jenkinsDir/hogwarts_test_mini_start_test.xml");
 		InputStream inputStream =classPathResource.getInputStream();
 
 		String jobXml = FileUtil.getText(inputStream);
@@ -128,16 +121,6 @@ public class JenkinsClient {
 		Job job = new Job(jobName,jenkinsBaseUrl+"job/"+jobName+"/");
 		job.setClient(jenkinsHttpClient);
 		return job;
-	}
-
-
-	/**
-	 *  构建job - 无参方式
-	 * @param job
-	 * @return
-	 */
-	private QueueReference build(Job job) throws IOException {
-		return build(job,null);
 	}
 
 	/**

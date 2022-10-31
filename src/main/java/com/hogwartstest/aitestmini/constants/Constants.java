@@ -36,14 +36,4 @@ public interface Constants {
 	 */
 	public final static Integer STATUS_THREE = 3;
 
-	/**
-	 * 1 任务类型 普通测试任务
-	 */
-	public final static Integer TASK_TYPE_ONE = 1;
-
-	/**
-	 * 2 任务类型 一键执行测试任务
-	 */
-	public final static Integer TASK_TYPE_TWO = 2;
-
 }

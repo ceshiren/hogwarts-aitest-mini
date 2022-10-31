@@ -51,14 +51,14 @@ public interface HogwartsTestCaseService {
 
 
 	/**
-	 *  修改测试任务状态信息
+	 *  修改状态信息
 	 * @param hogwartsTestCase
 	 * @return
 	 */
 	ResultDto<HogwartsTestCase> updateStatus(HogwartsTestCase hogwartsTestCase);
 
 	/**
-	 *  开始执行测试任务信息
+	 *  开始执行测试
 	 * @param hogwartsTestCase
 	 * @return
 	 */

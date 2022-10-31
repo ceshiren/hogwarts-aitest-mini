@@ -11,9 +11,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StartTestDto extends BaseDto {
 
-    /**
-     * ID
-     */
     @ApiModelProperty(value="测试用例id",required=true, example = "112")
     @NotNull
     private Integer caseId;

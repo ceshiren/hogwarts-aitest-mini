@@ -28,8 +28,6 @@ public class JenkinsFactory {
     private String jenkinsUserName;
     @Value("${jenkins.password}")
     private String jenkinsPassword;
-    @Value("${jenkins.casetype}")
-    private Integer jenkinsCaseType;
     @Value("${jenkins.casesuffix}")
     private String jenkinsCaseSuffix;
     @Value("${jenkins.testcommand}")
