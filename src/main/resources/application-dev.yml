@@ -28,14 +28,14 @@ logging:
 
 jenkins:
   #Jenkins的baseUrl
-  url: http://stuq.ceshiren.com:8080/
+  url: http://10.1.1.4:5555/
   #Jenkins的用户名
-  username: hogwarts
+  username: admin
   #Jenkins的密码
-  password: hogwarts123
+  password: hogwarts
   #测试用例后缀名 如果case为文件时，此处必填
-  casesuffix: yml
+  casesuffix: jmx
   #测试命令
   testcommand: hrun
   #Jenkins回调地址(即平台的baseUrl)
-  callbackurl: http://localhost:8091/
+  callbackurl: http://localhost:8093/
