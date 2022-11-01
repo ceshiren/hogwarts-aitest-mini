@@ -1,10 +1,12 @@
 package com.hogwartstest.aitestmini.entity;
 
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseParamsDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 @Table(name = "hogwarts_test_case")
@@ -18,6 +20,13 @@ public class HogwartsTestCase extends BaseEntityNew {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value="主键",required=true)
     private Integer id;
+
+    /**
+     * 测试用例模板
+     */
+    @Column(name = "case_template")
+    @ApiModelProperty(value="测试用例模板",required=true)
+    private String caseTemplate;
 
     /**
      * 测试数据
@@ -72,5 +81,8 @@ public class HogwartsTestCase extends BaseEntityNew {
     @Column(name = "update_time")
     @ApiModelProperty(value="更新时间",required=true)
     private Date updateTime;
+
+    @Transient
+    private List<RunCaseParamsDto> params;
 
 }

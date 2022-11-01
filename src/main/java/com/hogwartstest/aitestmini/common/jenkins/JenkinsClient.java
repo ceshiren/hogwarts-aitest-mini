@@ -51,7 +51,6 @@ public class JenkinsClient {
 
 		Map<String, String> params = operateJenkinsJobDto.getParams();
 
-		///todo 拼接Job名称
 		String jobName = JenkinsUtil.getStartTestJobName(operateJenkinsJobDto.getCaseId());
 
 		log.info("=====拼接Job名称====："+ jobName);

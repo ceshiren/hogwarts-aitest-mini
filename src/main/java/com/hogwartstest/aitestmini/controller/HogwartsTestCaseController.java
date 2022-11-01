@@ -1,11 +1,10 @@
 package com.hogwartstest.aitestmini.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import com.hogwartstest.aitestmini.dto.*;
-import com.hogwartstest.aitestmini.dto.testcase.StartTestDto;
-import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
-import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
-import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseStatusDto;
+import com.hogwartstest.aitestmini.dto.testcase.*;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
 import io.swagger.annotations.Api;
@@ -20,8 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author tlibn
@@ -45,14 +43,14 @@ public class HogwartsTestCaseController {
     @PostMapping("text")
     public ResultDto saveText(@RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
 
-        log.info("=====新增文本测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
+        log.info("=====新增文本测试用例-请求入参====："+ JSON.toJSONString(addHogwartsTestCaseDto));
 
         if(Objects.isNull(addHogwartsTestCaseDto)){
             return ResultDto.fail("请求参数不能为空");
         }
 
-        if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseData())){
-            return ResultDto.fail("测试用例数据不能为空");
+        if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseTemplate())){
+            return ResultDto.fail("测试用例模板不能为空");
         }
         if(StringUtils.isEmpty(addHogwartsTestCaseDto.getCaseName())){
             return ResultDto.fail("测试用例名称不能为空");
@@ -75,7 +73,7 @@ public class HogwartsTestCaseController {
     @PostMapping("file")
     public ResultDto saveFile(@RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
 
-        log.info("=====新增文件测试用例-请求入参====："+ JSONObject.toJSONString(addHogwartsTestCaseDto));
+        log.info("=====新增文件测试用例-请求入参====："+ JSON.toJSONString(addHogwartsTestCaseDto));
 
         if(Objects.isNull(addHogwartsTestCaseDto)){
             return ResultDto.fail("请求参数不能为空");
@@ -90,13 +88,15 @@ public class HogwartsTestCaseController {
         }
 
         InputStream inputStream =  caseFile.getInputStream();
-        String caseData = IOUtils.toString(inputStream,"UTF-8");
+        String caseTemplate = IOUtils.toString(inputStream,"UTF-8");
         inputStream.close();
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
         BeanUtils.copyProperties(addHogwartsTestCaseDto, hogwartsTestCase);
         //文件类型时需要将文件中的数据进行赋值
-        hogwartsTestCase.setCaseData(caseData);
+        hogwartsTestCase.setCaseTemplate(caseTemplate);
+        List<RunCaseParamsDto> params = objectArrayToList(addHogwartsTestCaseDto.getParamsStr());
+        hogwartsTestCase.setParams(params);
 
         ResultDto resultDto = hogwartsTestCaseService.save(hogwartsTestCase);
         return resultDto;
@@ -111,7 +111,7 @@ public class HogwartsTestCaseController {
     @PutMapping
     public ResultDto<HogwartsTestCase> update(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
 
-        log.info("修改测试用例-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseDto));
+        log.info("修改测试用例-入参= "+ JSON.toJSONString(updateHogwartsTestCaseDto));
 
         if(Objects.isNull(updateHogwartsTestCaseDto)){
             return ResultDto.success("测试用例信息不能为空");
@@ -126,6 +126,10 @@ public class HogwartsTestCaseController {
 
         if(StringUtils.isEmpty(caseName)){
             return ResultDto.success("测试用例名称不能为空");
+        }
+
+        if(StringUtils.isEmpty(updateHogwartsTestCaseDto.getCaseTemplate())){
+            return ResultDto.fail("测试用例模板不能为空");
         }
 
         HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
@@ -150,7 +154,6 @@ public class HogwartsTestCaseController {
             return ResultDto.success("caseId不能为空");
         }
 
-        ///todo
         ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.getById(caseId);
         return resultDto;
     }
@@ -167,7 +170,6 @@ public class HogwartsTestCaseController {
     public String getCaseDataById(@PathVariable Integer caseId) {
         log.info("=====根据用户id和caseId查询case原始数据-请求入参====："+ caseId);
 
-        ///todo
         String caseData = hogwartsTestCaseService.getCaseDataById(caseId);
         log.info("=====根据用户id和caseId查询case原始数据-请求出参====："+ caseData);
         return caseData;
@@ -194,7 +196,7 @@ public class HogwartsTestCaseController {
     @PostMapping("start")
     @ApiOperation("开始测试")
     public ResultDto testStart(@RequestBody StartTestDto startTestDto) throws Exception {
-        log.info("=====开始测试-请求入参====："+ JSONObject.toJSONString(startTestDto));
+        log.info("=====开始测试-请求入参====："+ JSON.toJSONString(startTestDto));
 
         if(Objects.isNull(startTestDto)){
             return ResultDto.fail("开始测试请求不能为空");
@@ -218,7 +220,7 @@ public class HogwartsTestCaseController {
     @PutMapping("status")
     public ResultDto<HogwartsTestCase> updateStatus(@RequestBody UpdateHogwartsTestCaseStatusDto updateHogwartsTestCaseStatusDto){
 
-        log.info("修改测试用例状态-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseStatusDto));
+        log.info("修改测试用例状态-入参= "+ JSON.toJSONString(updateHogwartsTestCaseStatusDto));
 
         if(Objects.isNull(updateHogwartsTestCaseStatusDto)){
             return ResultDto.success("修改测试用例状态信息不能为空");
@@ -259,9 +261,25 @@ public class HogwartsTestCaseController {
             return ResultDto.success("caseId不能为空");
         }
 
-        ///todo
         ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.delete(caseId);
         return resultDto;
+    }
+
+
+    private static List objectArrayToList(String json){
+        ArrayList list = new ArrayList();
+        //判断 字符串是否以 [ 开始 以  ] 结尾
+        if(!StringUtils.isEmpty(json) && json.startsWith("[") && json.endsWith("]")){
+            JSONArray array = JSONArray.fromObject(json);
+            for(int i=0; i<array.size(); i++){
+                JSONObject jsonObject = array.getJSONObject(i);
+                RunCaseParamsDto runCaseParamsDto = new RunCaseParamsDto();
+                runCaseParamsDto.setKey(jsonObject.getString("key"));
+                runCaseParamsDto.setValue(jsonObject.getString("value"));
+                list.add(runCaseParamsDto);
+            }
+        }
+        return list;
     }
 
 

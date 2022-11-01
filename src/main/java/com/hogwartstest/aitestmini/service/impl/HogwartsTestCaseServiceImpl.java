@@ -7,6 +7,7 @@ import com.hogwartstest.aitestmini.constants.Constants;
 import com.hogwartstest.aitestmini.dao.HogwartsTestCaseMapper;
 import com.hogwartstest.aitestmini.dto.ResultDto;
 import com.hogwartstest.aitestmini.dto.jenkins.OperateJenkinsJobDto;
+import com.hogwartstest.aitestmini.dto.testcase.RunCaseParamsDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
 import com.hogwartstest.aitestmini.util.JenkinsUtil;
@@ -55,6 +56,12 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         hogwartsTestCase.setUpdateTime(new Date());
         hogwartsTestCase.setStatus(Constants.STATUS_ONE);
         hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
+
+
+        List<RunCaseParamsDto> params = hogwartsTestCase.getParams();
+        String caseData = parseJmeterParams(hogwartsTestCase.getCaseTemplate(), params);
+        hogwartsTestCase.setCaseData(caseData);
+
         hogwartsTestCaseMapper.insertUseGeneratedKeys(hogwartsTestCase);
 
         StringBuilder testCommand = new StringBuilder();
@@ -87,11 +94,15 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
             return ResultDto.fail("未查到测试用例信息");
         }
 
+        List<RunCaseParamsDto> params = hogwartsTestCase.getParams();
+        String caseData = parseJmeterParams(hogwartsTestCase.getCaseTemplate(), params);
+        hogwartsTestCase.setCaseData(caseData);
+
         hogwartsTestCase.setCreateTime(result.getCreateTime());
         hogwartsTestCase.setUpdateTime(new Date());
         hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
 
-        hogwartsTestCaseMapper.updateByPrimaryKey(hogwartsTestCase);
+        hogwartsTestCaseMapper.updateByPrimaryKeySelective(hogwartsTestCase);
 
         return ResultDto.success("成功");
     }
@@ -320,6 +331,40 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
                 .replace("{caseId}",hogwartsTestCase.getId()+"");
 
         return culStr;
+    }
+
+    /**
+     *  动态解析jmeter参数
+     * @param caseData
+     * @param params
+     * @return
+     */
+    private String parseJmeterParams(String caseData, List<RunCaseParamsDto> params) {
+        if(Objects.nonNull(params)){
+
+            for (RunCaseParamsDto runCaseParamsDto:params) {
+
+                String key = runCaseParamsDto.getKey();
+
+                if(Objects.isNull(key)){
+                    continue;
+                }
+                StringBuilder keyStr = new StringBuilder();
+                if(!key.startsWith("${")){
+                    keyStr.append("${");
+                }
+                keyStr.append(key);
+                if(!key.endsWith("}")){
+                    keyStr.append("}");
+                }
+
+                String value = runCaseParamsDto.getValue();
+                caseData = caseData.replace(keyStr.toString(),value);
+
+            }
+
+        }
+        return caseData;
     }
 
 }
