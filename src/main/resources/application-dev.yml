@@ -34,8 +34,8 @@ jenkins:
   #Jenkins的密码
   password: hogwarts
   #测试用例后缀名 如果case为文件时，此处必填
-  casesuffix: jmx
+  casesuffix: .jmx
   #测试命令
-  testcommand: hrun
+  testcommand: jmeter -n -t {jmxName} -l hogwarts-test.jtl
   #Jenkins回调地址(即平台的baseUrl)
-  callbackurl: http://localhost:8093/
+  callbackurl: http://10.1.1.186:8093/

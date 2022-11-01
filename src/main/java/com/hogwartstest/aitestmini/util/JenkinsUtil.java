@@ -30,7 +30,7 @@ public class JenkinsUtil {
         StringBuilder updateStatusUrl = new StringBuilder();
 
         updateStatusUrl.append("curl -X PUT ");
-        updateStatusUrl.append("\""+baseUrl + "/testCase/status \" ");
+        updateStatusUrl.append("\""+baseUrl + "/case/status \" ");
         updateStatusUrl.append("-H \"Content-Type: application/json \" ");
         updateStatusUrl.append("-d ");
         JSONObject json = new JSONObject();

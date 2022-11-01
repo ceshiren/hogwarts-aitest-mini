@@ -51,40 +51,19 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
     @Override
     public ResultDto<HogwartsTestCase> save(HogwartsTestCase hogwartsTestCase) {
 
-
         hogwartsTestCase.setCreateTime(new Date());
         hogwartsTestCase.setUpdateTime(new Date());
+        hogwartsTestCase.setStatus(Constants.STATUS_ONE);
         hogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
+        hogwartsTestCaseMapper.insertUseGeneratedKeys(hogwartsTestCase);
+
         StringBuilder testCommand = new StringBuilder();
         makeTestCommand(testCommand, hogwartsTestCase);
+        hogwartsTestCase.setTestCommand(testCommand.toString());
 
-        hogwartsTestCaseMapper.insertUseGeneratedKeys(hogwartsTestCase);
+        hogwartsTestCaseMapper.updateByPrimaryKey(hogwartsTestCase);
+
         return ResultDto.success("成功", hogwartsTestCase);
-    }
-
-    /**
-     * 删除测试用例信息
-     *
-     * @param caseId
-     */
-    @Override
-    public ResultDto<HogwartsTestCase> delete(Integer caseId) {
-
-        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
-
-        queryHogwartsTestCase.setId(caseId);
-        queryHogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
-
-        HogwartsTestCase result = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
-
-        //如果为空，则提示
-        if(Objects.isNull(result)){
-            return ResultDto.fail("未查到测试用例信息");
-        }
-        result.setDelFlag(Constants.DEL_FLAG_ZERO);
-        hogwartsTestCaseMapper.updateByPrimaryKey(result);
-
-        return ResultDto.success("成功");
     }
 
     /**
@@ -206,8 +185,7 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         }
 
 
-        String testCommandStr =  jenkinsTestCommand;
-        if(StringUtils.isEmpty(testCommandStr)){
+        if(StringUtils.isEmpty(resultHogwartsTestCase.getTestCommand())){
             return ResultDto.fail("测试命令不能为空");
         }
 
@@ -218,16 +196,17 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         StringBuilder testCommand = new StringBuilder();
 
         //添加保存测试命令
-        testCommand.append(testCommandStr);
+        testCommand.append(resultHogwartsTestCase.getTestCommand());
         testCommand.append(" \n");
 
 
         StringBuilder updateStatusUrl = JenkinsUtil.getUpdateTaskStatusUrl(jenkinsCallbackurl, resultHogwartsTestCase);
 
+        log.info("updateStatusUrl== " + updateStatusUrl);
         //构建参数组装
         Map<String, String> params = new HashMap<>();
 
-        params.put("aitestBaseUrl",jenkinsCallbackurl);
+        params.put("callbackurl",jenkinsCallbackurl);
         params.put("testCommand",testCommand.toString());
         params.put("updateStatusData",updateStatusUrl.toString());
 
@@ -270,10 +249,35 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
         resultHogwartsTestCase.setUpdateTime(new Date());
 
         //仅状态为已完成时修改
-        if(Constants.STATUS_THREE.equals(resultHogwartsTestCase.getStatus())){
+        if(!Constants.STATUS_THREE.equals(resultHogwartsTestCase.getStatus())){
             resultHogwartsTestCase.setStatus(Constants.STATUS_THREE);
             hogwartsTestCaseMapper.updateByPrimaryKey(resultHogwartsTestCase);
         }
+
+        return ResultDto.success("成功");
+    }
+
+    /**
+     * 删除测试用例信息
+     *
+     * @param caseId
+     */
+    @Override
+    public ResultDto<HogwartsTestCase> delete(Integer caseId) {
+
+        HogwartsTestCase queryHogwartsTestCase = new HogwartsTestCase();
+
+        queryHogwartsTestCase.setId(caseId);
+        queryHogwartsTestCase.setDelFlag(Constants.DEL_FLAG_ONE);
+
+        HogwartsTestCase result = hogwartsTestCaseMapper.selectOne(queryHogwartsTestCase);
+
+        //如果为空，则提示
+        if(Objects.isNull(result)){
+            return ResultDto.fail("未查到测试用例信息");
+        }
+        result.setDelFlag(Constants.DEL_FLAG_ZERO);
+        hogwartsTestCaseMapper.updateByPrimaryKey(result);
 
         return ResultDto.success("成功");
     }
@@ -284,74 +288,38 @@ public class HogwartsTestCaseServiceImpl implements HogwartsTestCaseService {
      */
     private void makeTestCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase) {
 
-        //打印测试目录
-        testCommand.append("pwd");
-        testCommand.append("\n");
-
         if(Objects.isNull(hogwartsTestCase)){
             throw new ServiceException("组装测试命令时，测试用例信息为空");
         }
 
-        String runCommand = jenkinsTestCommand;
-        String systemTestCommand = jenkinsTestCommand;
-        String commandRunCaseSuffix = jenkinsCaseSuffix;
-
-        if(StringUtils.isEmpty(systemTestCommand)){
-            throw new ServiceException("组装测试命令时，运行的测试命令信息为空");
-        }
-
-        if(StringUtils.isEmpty(commandRunCaseSuffix)){
-            throw new ServiceException("测试用例后缀名不能为空");
-        }
-
+        //打印测试目录
+        testCommand.append("pwd");
+        testCommand.append("\n");
 
         //拼装下载文件的curl命令
-        makeCurlCommand(testCommand, hogwartsTestCase, commandRunCaseSuffix);
+        String culStr = makeCurlCommand(hogwartsTestCase);
+        log.info("culStr== " + culStr);
+        testCommand.append(culStr);
+        //拼装jmeter执行命令
+        String runCommand = jenkinsTestCommand.replace("{jmxName}",hogwartsTestCase.getCaseName()+jenkinsCaseSuffix);
+        log.info("runCommand== " + runCommand);
+        testCommand.append(runCommand);
         testCommand.append("\n");
-        //拼装命令前缀
-        testCommand.append(systemTestCommand).append(" ");
-        //平台测试用例名称
-        testCommand.append(hogwartsTestCase.getCaseName())
-                //拼装.分隔符
-                .append(".")
-                //拼装case文件后缀
-                .append(commandRunCaseSuffix)
-                .append(" || true")
-                .append("\n");
 
-        log.info("testCommand.toString()== "+testCommand.toString() + "  runCommand== " + runCommand);
-
-        testCommand.append("\n");
     }
 
     /**
      *  拼装下载文件的curl命令
-     * @param testCommand
      * @param hogwartsTestCase
-     * @param commandRunCaseSuffix
      */
-    private void makeCurlCommand(StringBuilder testCommand, HogwartsTestCase hogwartsTestCase, String commandRunCaseSuffix) {
+    private String makeCurlCommand(HogwartsTestCase hogwartsTestCase) {
 
-        //通过curl命令获取测试数据并保存为文件
-        testCommand.append("curl ")
-                .append("-o ");
+        String culStr = "curl -o {jmxName} ${callbackurl}/case/data/{caseId} \n";
 
-        String caseName = hogwartsTestCase.getCaseName();
+        culStr = culStr.replace("{jmxName}",hogwartsTestCase.getCaseName()+jenkinsCaseSuffix)
+                .replace("{caseId}",hogwartsTestCase.getId()+"");
 
-        if(StringUtils.isEmpty(caseName)){
-            caseName = "测试用例无测试名称";
-        }
-
-        testCommand.append(caseName)
-                .append(".")
-                .append(commandRunCaseSuffix)
-                .append(" ${aitestBaseUrl}/case/data/")
-                .append(hogwartsTestCase.getId());
-
-        //本行命令执行失败，继续运行下面的命令行
-        testCommand.append(" || true");
-
-        testCommand.append("\n");
+        return culStr;
     }
 
 }

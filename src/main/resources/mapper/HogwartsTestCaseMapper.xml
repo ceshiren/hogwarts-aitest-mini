@@ -7,6 +7,7 @@
     -->
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="case_data" property="caseData" jdbcType="VARCHAR" />
+    <result column="test_command" property="testCommand" jdbcType="VARCHAR" />
     <result column="case_name" property="caseName" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />

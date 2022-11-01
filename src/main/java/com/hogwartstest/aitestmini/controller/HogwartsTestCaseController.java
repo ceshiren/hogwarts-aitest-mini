@@ -5,6 +5,7 @@ import com.hogwartstest.aitestmini.dto.*;
 import com.hogwartstest.aitestmini.dto.testcase.StartTestDto;
 import com.hogwartstest.aitestmini.dto.testcase.AddHogwartsTestCaseDto;
 import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseDto;
+import com.hogwartstest.aitestmini.dto.testcase.UpdateHogwartsTestCaseStatusDto;
 import com.hogwartstest.aitestmini.entity.HogwartsTestCase;
 import com.hogwartstest.aitestmini.service.HogwartsTestCaseService;
 import io.swagger.annotations.Api;
@@ -40,7 +41,7 @@ public class HogwartsTestCaseController {
      * @param addHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
+    @ApiOperation("新增文本型测试用例")
     @PostMapping("text")
     public ResultDto saveText(@RequestBody AddHogwartsTestCaseDto addHogwartsTestCaseDto){
 
@@ -70,7 +71,7 @@ public class HogwartsTestCaseController {
      * @param addHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "批量新增测试用例", notes="仅用于测试用户")
+    @ApiOperation("新增文件型测试用例")
     @PostMapping("file")
     public ResultDto saveFile(@RequestParam("caseFile") MultipartFile caseFile, AddHogwartsTestCaseDto addHogwartsTestCaseDto) throws IOException {
 
@@ -106,7 +107,7 @@ public class HogwartsTestCaseController {
      * @param updateHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "修改测试用例")
+    @ApiOperation("修改测试用例")
     @PutMapping
     public ResultDto<HogwartsTestCase> update(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
 
@@ -139,7 +140,7 @@ public class HogwartsTestCaseController {
      * @param caseId
      * @return
      */
-    @ApiOperation(value = "根据caseId查询")
+    @ApiOperation("根据caseId查询")
     @GetMapping("/{caseId}")
     public ResultDto<HogwartsTestCase> getById(@PathVariable Integer caseId){
 
@@ -154,45 +155,14 @@ public class HogwartsTestCaseController {
         return resultDto;
     }
 
-    /**
-     *
-     * @param caseId
-     * @return
-     */
-    @ApiOperation(value = "根据caseId删除")
-    @DeleteMapping("/{caseId}")
-    public ResultDto<HogwartsTestCase> delete(@PathVariable Integer caseId){
-
-        log.info("根据caseId删除-入参= "+ caseId);
-
-        if(Objects.isNull(caseId)){
-            return ResultDto.success("caseId不能为空");
-        }
-
-        ///todo
-        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.delete(caseId);
-        return resultDto;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @ApiOperation(value = "列表查询")
-    @GetMapping("/list")
-    public ResultDto<List<HogwartsTestCase>> list(){
-
-        ResultDto<List<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list();
-        return responseResultDto;
-    }
 
     /**
      * 根据caseId查询case原始数据
-     *  地址不要随便改 ${caseDataUrl}/testcase/data/  有引用
+     *  地址不要随便改 ${callbackurl}/case/data/  有引用
      * @param caseId 测试用例id
      * @return
      */
-    @ApiOperation(value = "根据测试用例id查询")
+    @ApiOperation("根据测试用例id查询")
     @GetMapping("data/{caseId}")
     public String getCaseDataById(@PathVariable Integer caseId) {
         log.info("=====根据用户id和caseId查询case原始数据-请求入参====："+ caseId);
@@ -203,40 +173,16 @@ public class HogwartsTestCaseController {
         return caseData;
     }
 
-
     /**
      *
-     * @param updateHogwartsTestCaseDto
      * @return
      */
-    @ApiOperation(value = "修改测试用例状态")
-    @PutMapping("status")
-    public ResultDto<HogwartsTestCase> updateStatus(@RequestBody UpdateHogwartsTestCaseDto updateHogwartsTestCaseDto){
+    @ApiOperation("列表查询")
+    @GetMapping("/list")
+    public ResultDto<List<HogwartsTestCase>> list(){
 
-        log.info("修改测试用例状态-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseDto));
-
-        if(Objects.isNull(updateHogwartsTestCaseDto)){
-            return ResultDto.success("修改测试用例状态信息不能为空");
-        }
-
-        Integer caseId = updateHogwartsTestCaseDto.getId();
-        Integer status = updateHogwartsTestCaseDto.getStatus();
-
-        if(Objects.isNull(caseId)){
-            return ResultDto.success("用例id不能为空");
-        }
-
-        if(StringUtils.isEmpty(status)){
-            return ResultDto.success("用例状态码不能为空");
-        }
-
-        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
-
-        hogwartsTestCase.setId(caseId);
-        hogwartsTestCase.setStatus(status);
-
-        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.updateStatus(hogwartsTestCase);
-        return resultDto;
+        ResultDto<List<HogwartsTestCase>> responseResultDto = hogwartsTestCaseService.list();
+        return responseResultDto;
     }
 
     /**
@@ -261,6 +207,61 @@ public class HogwartsTestCaseController {
         hogwartsTestCase.setId(startTestDto.getCaseId());
 
         return hogwartsTestCaseService.startTask(hogwartsTestCase);
+    }
+
+    /**
+     *
+     * @param updateHogwartsTestCaseStatusDto
+     * @return
+     */
+    @ApiOperation("修改测试用例状态")
+    @PutMapping("status")
+    public ResultDto<HogwartsTestCase> updateStatus(@RequestBody UpdateHogwartsTestCaseStatusDto updateHogwartsTestCaseStatusDto){
+
+        log.info("修改测试用例状态-入参= "+ JSONObject.toJSONString(updateHogwartsTestCaseStatusDto));
+
+        if(Objects.isNull(updateHogwartsTestCaseStatusDto)){
+            return ResultDto.success("修改测试用例状态信息不能为空");
+        }
+
+        Integer caseId = updateHogwartsTestCaseStatusDto.getCaseId();
+        Integer status = updateHogwartsTestCaseStatusDto.getStatus();
+
+        if(Objects.isNull(caseId)){
+            return ResultDto.success("用例id不能为空");
+        }
+
+        if(StringUtils.isEmpty(status)){
+            return ResultDto.success("用例状态码不能为空");
+        }
+
+        HogwartsTestCase hogwartsTestCase = new HogwartsTestCase();
+
+        hogwartsTestCase.setId(caseId);
+        hogwartsTestCase.setStatus(status);
+
+        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.updateStatus(hogwartsTestCase);
+        return resultDto;
+    }
+
+    /**
+     *
+     * @param caseId
+     * @return
+     */
+    @ApiOperation("根据caseId删除")
+    @DeleteMapping("/{caseId}")
+    public ResultDto<HogwartsTestCase> delete(@PathVariable Integer caseId){
+
+        log.info("根据caseId删除-入参= "+ caseId);
+
+        if(Objects.isNull(caseId)){
+            return ResultDto.success("caseId不能为空");
+        }
+
+        ///todo
+        ResultDto<HogwartsTestCase> resultDto = hogwartsTestCaseService.delete(caseId);
+        return resultDto;
     }
 
 

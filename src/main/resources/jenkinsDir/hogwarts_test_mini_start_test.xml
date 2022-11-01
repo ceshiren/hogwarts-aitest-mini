@@ -5,14 +5,8 @@
         <hudson.model.ParametersDefinitionProperty>
             <parameterDefinitions>
                 <hudson.model.StringParameterDefinition>
-                    <name>aitestBaseUrl</name>
+                    <name>callbackurl</name>
                     <description>测试平台baseUrl</description>
-                    <defaultValue>无/</defaultValue>
-                    <trim>true</trim>
-                </hudson.model.StringParameterDefinition>
-                <hudson.model.StringParameterDefinition>
-                    <name>token</name>
-                    <description>测试平台token</description>
                     <defaultValue>无/</defaultValue>
                     <trim>true</trim>
                 </hudson.model.StringParameterDefinition>

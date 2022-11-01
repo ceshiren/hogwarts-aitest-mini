@@ -16,13 +16,6 @@ public interface HogwartsTestCaseService {
 	ResultDto save(HogwartsTestCase hogwartsTestCase);
 
 	/**
-	 *  删除测试用例信息
-	 * @param caseId
-	 * @return
-	 */
-	ResultDto<HogwartsTestCase> delete(Integer caseId);
-
-	/**
 	 *  修改测试用例信息
 	 * @param hogwartsTestCase
 	 * @return
@@ -63,5 +56,12 @@ public interface HogwartsTestCaseService {
 	 * @return
 	 */
 	ResultDto startTask(HogwartsTestCase hogwartsTestCase) throws IOException;
+
+	/**
+	 *  删除测试用例信息
+	 * @param caseId
+	 * @return
+	 */
+	ResultDto<HogwartsTestCase> delete(Integer caseId);
 
 }

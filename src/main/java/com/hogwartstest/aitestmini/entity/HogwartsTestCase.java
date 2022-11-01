@@ -27,6 +27,13 @@ public class HogwartsTestCase extends BaseEntityNew {
     private String caseData;
 
     /**
+     * 测试命令
+     */
+    @Column(name = "test_command")
+    @ApiModelProperty(value="测试命令",required=true)
+    private String testCommand;
+
+    /**
      * 用例名称
      */
     @Column(name = "case_name")
