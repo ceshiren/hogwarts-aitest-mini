@@ -1,7 +1,5 @@
 package com.hogwartstest.aitestmini;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,11 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(outputDir = "target/asciidoc/snippets")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringRunner.class)
 public class Swagger2MarkupTest {
     @Autowired
     private MockMvc mockMvc;
-    @Test
     public void createSpringfoxSwaggerJson() throws Exception {
 //        String outputDir = System.getProperty("io.springfox.staticdocs.outputDir");
         String outputDir = "target/swagger";
